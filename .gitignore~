@@ -8,3 +8,4 @@ local_settings.py
 django.wsgi
 settings.py
 *.sublime*
+.settings/
