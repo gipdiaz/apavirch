@@ -1,0 +1,21 @@
+from django.contrib import admin
+from trazabilidad.models import *
+
+admin.site.register(Alza)
+admin.site.register(Alza_tipo)
+admin.site.register(Apiario)
+admin.site.register(Ciudad)
+admin.site.register(Direccion)
+admin.site.register(Documento_tipo)
+admin.site.register(Envase)
+admin.site.register(Envase_tipo)
+admin.site.register(Extraccion)
+admin.site.register(Fraccionamiento)
+admin.site.register(Inspeccion)
+admin.site.register(Lote)
+admin.site.register(Marca)
+admin.site.register(Persona)
+admin.site.register(Remito)
+admin.site.register(Remito_detalle)
+admin.site.register(Socio)
+admin.site.register(Tambor)
