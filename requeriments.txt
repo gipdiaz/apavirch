@@ -1,0 +1,5 @@
+django
+django-admin-bootstrapped
+django-registration
+django-registration -e git://github.com/yourcelf/django-registration-defaults.git#egg=django-registration-defaults
+
