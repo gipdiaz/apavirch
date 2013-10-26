@@ -1,0 +1,15 @@
+== BORRAR TABLAS ==
+python manage.py sqlclear myapp admin sites sessions auth contenttypes | python manage.py dbshell
+
+== GENERAR LA MIGRACIÓN INICIAL DE SOUTH ==
+./manage.py schemamigration southtut --initial
+
+== GENERAR LA MIGRACIÓN AUTOMÁTICA DE SOUTH ==
+./manage.py schemamigration southtut --auto
+
+== APLICAR LA MIGRACIÓN ==
+./manage.py migrate southtut
+
+== CONVERTIR UNA APP A SOUTH ==
+./manage.py syncdb
+./manage.py convert_to_south myapp

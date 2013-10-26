@@ -3,6 +3,9 @@ from django.conf.urls import patterns, include, url
 from apavirch import views, settings
 from django.contrib import admin
 from django.contrib.auth.views import login, logout
+#import notifications#############################
+
+from django.views.generic import TemplateView
 
 admin.autodiscover()
 
@@ -16,7 +19,10 @@ urlpatterns = patterns('',
     #url(r'^accounts/', include('registration.backends.default.urls')),
     (r'^accounts/', include('registration.backends.default.urls')),
 #    url(r'^accounts/register/$', views.register, name='register'),
+    #url(r'^inbox/notifications/', include(notifications.urls)),#####################
     
+    #url(r'^notifications/$', views.notifications, name='notifications' ),##############
+    #url(r'^autoreports/', include('autoreports.urls')),
     # Apavirch
     url(r'^$', views.index, name='index'),
     

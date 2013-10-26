@@ -1,0 +1,6 @@
+{% load humanize %}
+Has creado una cuenta en el sistema de APAVIRCH, para activar tu cuenta, hace click en el siguiente link o copialo y pegalo en la barra de direcciones de tu navegador
+
+http://127.0.0.1:8000/accounts/activate/{{ activation_key }}/
+
+Si no te creaste una cuenta, no necesitas hacer nada, no recibiras mas email de nosotros, y la cuenta va a expirar en {{ expiration_days|apnumber }} días.

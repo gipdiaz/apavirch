@@ -1,6 +1,6 @@
 # Django settings for apavirch project.
 import os
-PROJECT_DIR = os.path.dirname(__file__)
+PROJECT_ROOT = os.path.abspath('.')
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -37,6 +37,11 @@ TIME_ZONE = 'America/Argentina/Buenos_Aires'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'es-AR'
 
+CONTEXT_PROCESSORS  = (
+    'django.contrib.auth.context_processors.auth',
+)
+
+
 SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
@@ -53,7 +58,7 @@ USE_TZ = True
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
 
-MEDIA_ROOT = os.path.join(PROJECT_DIR,'media/')
+MEDIA_ROOT = os.path.join(PROJECT_ROOT,'media/')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -64,7 +69,7 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = os.path.join(PROJECT_DIR,'static/')
+STATIC_ROOT = os.path.join(PROJECT_ROOT,'static/')
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -101,8 +106,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    # Uncomment the next line for simple clickjacking protection:
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
 ROOT_URLCONF = 'apavirch.urls'
@@ -126,10 +129,11 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     #REGISTRATION_TEMPLATE_DIR,
-    ( os.path.join(PROJECT_DIR,'templates/'),)
+    ( os.path.join(PROJECT_ROOT,'templates/'),)
 )
 
 INSTALLED_APPS = (
+    'django_extensions',
     'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.admindocs',
@@ -140,10 +144,13 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django_extensions',
     'registration',
     'trazabilidad',
-    
+    'south',
 )
+
+#AUTOREPORTS_USE_CMSUTILS = False
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

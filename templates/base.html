@@ -1,0 +1,109 @@
+{% load admin_static %}
+{% load url from future %}
+{% load i18n %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="es-AR">
+	<head>
+		
+	<title>{% block title %}APAVIRCH{% endblock %}</title>
+		
+  	<!-- METAS -->
+	
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    
+    <!-- STYLES -->
+    
+    <link type="text/css" rel="stylesheet"  href="/media/css/bootstrap.min.css">
+    <style>
+    	body {
+    		padding-top: 60px; /* When using the navbar-top-fixed */
+    	}
+	</style>
+    <link type="text/css" rel="stylesheet"  href="/media/css/bootstrap-responsive.min.css">
+    <link type="text/css" rel="stylesheet"  href="/media/css/jquery-ui-1.10.3.custom.min.css">
+    
+    <!-- JAVASCRIPTS -->
+    
+    <script type="text/javascript" src="/media/js/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="/media/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script type="text/javascript" src="/media/js/bootstrap.min.js"></script>
+    
+    <script type="text/javascript">
+    	$(function () {
+      	
+      		$(document).ready(function(){
+      
+      		});
+      		 
+    	});
+	</script>	
+  	{%block head %}{% endblock %}
+	</head>
+	<body style="padding-top: 50px">	
+	  	<div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <a class="brand" href="/">APAVIRCH</a>
+                    {% block nav %}
+                    <div class="nav-collapse collapse">
+                        <ul class="nav">
+                            <li><a href="/"><i class="icon-home icon-white"></i> inicio</a></li>
+                            <li><a href="#"><i class="icon-list icon-white"></i> Reportes</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-plus-sign icon-white"></i> ABM<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="/admin/trazabilidad/alza/"><strong>Alzas</strong></a></li>
+                                    <li><a href="/admin/trazabilidad/apiario/"><strong>Apiarios</strong></a></li>
+                                    <li><a href="/admin/trazabilidad/ciudad/"><strong>Ciudades</strong></a></li>
+                                    <li><a href="/admin/trazabilidad/direccion/"><strong>Direcciones</strong></a></li>
+                                    <li><a href="/admin/trazabilidad/envase/"><strong>Envases</strong></a></li>
+                                    <li><a href="/admin/trazabilidad/extraccion/"><strong>Extracciones</strong></a></li>
+                                    <li><a href="/admin/trazabilidad/fraccionamiento/"><strong>Fraccionamientos</strong></a></li>
+                                    <li><a href="/admin/trazabilidad/inspeccion/"><strong>Inspecciones</strong></a></li>
+                                    <li><a href="/admin/trazabilidad/lote/"><strong>Lotes</strong></a></li>
+                                    <li><a href="/admin/trazabilidad/marca/"><strong>Marcas</strong></a></li>
+                                    <li><a href="/admin/trazabilidad/persona/"><strong>Personas</strong></a></li>
+                                    <li><a href="/admin/trazabilidad/remito/"><strong>Remitos</strong></a></li>
+                                    <li><a href="/admin/trazabilidad/socio/"><strong>Socios</strong></a></li>
+                                    <li><a href="/admin/trazabilidad/tambor/"><strong>Tambores</strong></a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul class="nav pull-right">
+                        	{% if user.is_active and user.is_staff %}
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'Welcome,' %} <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong> <b class="caret"></b></a>
+                                    <ul class="dropdown-menu pull-right">
+                                        {% if user.has_usable_password %}
+                                        <li><a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a></li>
+                                        {% endif %}
+                                        <li><a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a></li>
+                                    </ul>
+                                </li>
+                            {% endif %}
+                            {% if user.is_active and user.is_superuser %}
+                        	   <li><a href="/admin/"><i class="icon-wrench icon-white"></i> Ingresar Admin</a></li>
+                            {% endif %}
+                        </ul>
+                    </div><!-- /.nav-collapse -->
+                    {% endblock %}
+                </div><!-- /.container -->
+            </div><!-- /navbar-inner -->
+		</div>
+	  	<div class="container-fluid">
+	    	<div style="padding: 40px 15px;text-align: center;">
+                <h1>Sistema de Gestión de APAVIRCH</h1>
+                <p class="lead">Descripción 1<br> Descripción 2</p>
+	      		<!--Body content-->
+				{% block body %}{% endblock%}
+			</div>
+		</div>
+	</body>
+</html>

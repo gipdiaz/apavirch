@@ -1,0 +1,1 @@
+python manage.py sqlclear myapp admin sites sessions auth contenttypes | python manage.py dbshell

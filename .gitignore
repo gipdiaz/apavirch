@@ -4,7 +4,13 @@
 *.project
 *.pydevproject
 *.py~
+*.doc
+documentacion/
+*.pdf
+*.png
+*.graphml
+*.gan
+*.dot
 local_settings.py
 django.wsgi
-settings.py
 *.sublime*
