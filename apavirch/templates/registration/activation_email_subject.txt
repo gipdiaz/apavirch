@@ -1,1 +1,0 @@
-Activa tu cuenta en APAVIRCH, la misma expira en {{ expiration_days }} days!
