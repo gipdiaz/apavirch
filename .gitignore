@@ -13,4 +13,5 @@ documentacion/
 *.dot
 local_settings.py
 django.wsgi
+apavirch.db
 *.sublime*

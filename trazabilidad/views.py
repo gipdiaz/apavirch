@@ -8,10 +8,10 @@ from django import forms
 from django.template import RequestContext, Template, Context
 from django.contrib.contenttypes.models import ContentType
 from .models import *
-from .forms import FormLote, GrupoAlzaFormSet, FormSocioEditar, FormSocio
+from .forms import FormLote, GrupoAlzaFormSet, FormSocioEditar, FormSocio, FormMarcasSocio, FormMarcasSocioCheck, FormTEST, MarcaFormSet
 from django.forms.models import model_to_dict
 from django.forms.models import inlineformset_factory
-
+from django.forms import Form
 @login_required
 def index(request):
     """ Index del sistema """
@@ -232,6 +232,7 @@ class EditarSocioView(CreateView):
         else:                
             prueba_periodo = Prueba.objects.get(pk=self.object.object_id).periodoAPrueba
             form = FormSocio(instance = self.object, initial={'Prueba': prueba_periodo})
+
         return self.render_to_response(self.get_context_data(form=form))
 
     def post(self, request, *args, **kwargs):
@@ -305,6 +306,7 @@ def desactivarSocio(request):
     else:
         return HttpResponse('No es una peticion Ajax')
 
+@login_required
 def socios(request):
     """ Gestion de socios """
     socios = Socio.objects.all()
@@ -314,8 +316,50 @@ def socios(request):
 @login_required
 def marcasSocio(request, id):
     socio = Socio.objects.get(pk=id)
-    marcas = Marca.objects.all()
-    return render_to_response('trazabilidad/marcas-socio.html',{'marcas':marcas, 'socio':socio}, context_instance=RequestContext(request))
+    
+    if request.POST:
+        try:
+            form = MarcaFormSet(request.POST)
+
+            import pdb; pdb.set_trace()      
+            if (form.is_valid):
+
+            
+                print '################'
+                print 'estoy en '
+                print request
+                print '################'
+            
+                return HttpResponseRedirect('/socios/')
+        except ValidationError:
+            pass
+
+
+    else:
+
+        marcasRelacionadas = socio.getMarcasRelacionadas()
+        marcasDisponibles = socio.getMarcasDisponibles()
+        marcas = marcasDisponibles | marcasRelacionadas
+        initial_data = []
+        for marca in marcasDisponibles:            
+            initial_data.append({'descripcion':marca.descripcion, 'tipoMarca_id':marca.tipoMarca, 'idMarca':marca.idMarca})
+
+        todasMarcas = Marca.objects.all()
+        print '====='
+        print marcasRelacionadas.values()
+        for i in marcasRelacionadas: 
+            i.checkSocioMarca = True            
+        print '====='
+        print marcasRelacionadas.values()
+        print marcasRelacionadas[0].checkSocioMarca
+
+        form = MarcaFormSet(queryset=marcasRelacionadas)
+     
+
+        return render_to_response('trazabilidad/marcas-socio.html',
+            {'form':form, 'socio':socio},
+            #{'form':form, 'marcasDisponibles':marcasDisponibles, 'socio':socio}, 
+            context_instance=RequestContext(request))
 
 #################################################################
 
