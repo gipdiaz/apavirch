@@ -3,32 +3,60 @@
 Marcas de {{ socio.nombreYApellido }}
 {% endblock %}
 {% block modalbody %}
+    {% load eztables %}
 
-  <div class="row top-margin">
-        <table  id="tabla-socios" class="table table-condensed table-hover">
+    <!-- STYLES -->
+
+    {% datatables_bootstrap_css %}
+    
+    <!-- JAVASCRIPTS -->
+
+    {% datatables_js %}
+    {% datatables_bootstrap_js %}
+<script>
+$(function(){
+ $(document).ready(function(){
+        $('#tabla-marcas').dataTable({
+            "oLanguage": {  
+                "sUrl": "/static/js/libs/datatables/language.es.json"},
+                "bLengthChange":false,
+        });
+            
+  }); 
+});
+</script>
+
+
+<form id="marcasSocio" method="post" action="/socios/marcas-socio/{{ socio.codigoUnicoIdentif }}/">
+  {% csrf_token %}
+  {{ form.management_form }}
+  {{ form.non_form_errors }}
+  <div class="row top-margin">        
+        <table  id="tabla-marcas" class="table table-condensed table-hover">
            <thead>
                 <tr>
-                    <th>#</th>
                     <th>Marca</th>
-                    <th>Tipo de Marca</th>
-                    
+                    <th>Tipo de Marca</th>                                      
+                    <th>Asociada</th>
                 </tr>
             </thead>
             <tbody>
-            {% for marca in marcas %}
-			       <tr>
-                  <td name="id">{{ marca.id }}</td>
-                  <td>{{ marca.descripcion }}</td>
-                  <td>{{ marca.tipoMarca_id }}</td>	                
-	                <td class="center">                    
-	                    <input type="checkbox">
-                  </td>
-            </tr>
-            {% endfor %}
+            {% for marcaset in form.forms %}  
+                <tr>
+                    <td>{{marcaset.instance.descripcion}}</th>                                      
+                    <td>{{marcaset.instance.tipoMarca}}</td>
+                    <td>{{marcaset.checkSocioMarca}}</td>
+                </tr>                                        
+              {%endfor%}
+    
             </tbody> 
         </table>
+  </div>
 
-    <!-- Modal -->
-        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    </div>
+</form>
+{% endblock %}
+
+{% block modalfooter %}
+  <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+  <input type="submit" value="Guardar" class="submit btn btn-primary" form="marcasSocio"/>
 {% endblock %}

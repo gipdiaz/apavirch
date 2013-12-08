@@ -74,7 +74,7 @@ class Marca (models.Model):
         verbose_name_plural = "Marcas"
 
     def __unicode__(self):
-        return u'%s %s' % (self.descripcion, self.tipoMarca)
+        return u'%s' % (self.descripcion)
 
 ## ------------------------------------------- ##
 class Persona (models.Model):
@@ -143,7 +143,19 @@ class Socio(Persona):
         self.save()
         estado.socio = self
         estado.save()
-    
+
+    def getMarcasRelacionadas(self):
+        return self.marcas.all()
+
+    def getMarcasDisponibles(self):               
+        return Marca.objects.all().exclude(idMarca__in = self.marcas.all().values_list('idMarca'))
+
+    def asociarMarcas(self, marca):
+        self.marcas.add(marca)
+        self.save()
+
+
+
     class Meta:
         verbose_name_plural = "Socios"
     
@@ -207,7 +219,7 @@ class SocioMarca (models.Model):
         verbose_name_plural = "Socios Marcas"
     
     def __unicode__(self):
-        pass
+        return u'a'
 
 ## ------------------------------------------- ##
 class Apiario(models.Model):         

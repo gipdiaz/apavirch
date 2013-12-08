@@ -1,8 +1,8 @@
 from django import forms
 from django.forms.models import BaseInlineFormSet
-from .models import Lote, GrupoAlza, Socio, SocioMarca
-from django.forms import ModelForm
-from django.forms.models import inlineformset_factory
+from .models import Lote, GrupoAlza, Socio, SocioMarca, Marca
+from django.forms import ModelForm, Form
+from django.forms.models import inlineformset_factory, formset_factory, modelformset_factory
 from django.core.exceptions import ValidationError
 
 
@@ -46,11 +46,33 @@ class FormSocioEditar(ModelForm):
         fields = ('codigoUnicoIdentif' ,'tipoDocumento', 'nroDocumento','nombreYApellido','direccion','telefono','email', 'nroRenapa')
         model = Socio
 
-class FormSocioMarca(ModelForm):
+
+class FormMarcasSocioCheck(Form):
+    checkSocioMarca = forms.BooleanField()
+    socio = forms.CharField(max_length="200")
+    marca = forms.IntegerField()
+
+
+
+class FormTEST(ModelForm):
+    checkSocioMarca = forms.BooleanField(required=False)
+
+
+
     class Meta:
-        model = SocioMarca
+        model = Marca    
 
 
+MarcaFormSet = modelformset_factory(Marca, form=FormTEST, extra = 0)
+
+
+class FormMarcasSocio(ModelForm):
+    #fechaPrueba = forms.DateTimeField()
+    #tipoMarca = forms.CharField(max_length=50)
+    class Meta:
+        #fields = ('descripcion')
+        model = Marca
+        
 
 
 
