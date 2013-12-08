@@ -16,15 +16,6 @@ urlpatterns = patterns('',
     
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/login/$', login, {'template_name':'admin/login.html'}),
-    #url(r'^accounts/', include('registration.backends.default.urls')),
-    (r'^accounts/', include('registration.backends.default.urls')),
-#    url(r'^accounts/register/$', views.register, name='register'),
-    #url(r'^inbox/notifications/', include(notifications.urls)),#####################
-    
-    #url(r'^notifications/$', views.notifications, name='notifications' ),##############
-    #url(r'^autoreports/', include('autoreports.urls')),
-    # Apavirch
-    url(r'^$', views.index, name='index'),
     
     # Trazabilidad
     url(r'^', include('trazabilidad.urls')),

@@ -1,0 +1,92 @@
+{% extends "trazabilidad/base.html" %}
+
+{% block head %}
+	<title>Gestión de Lotes</title>
+
+    {% load eztables %}
+
+    <!-- STYLES -->
+
+    {% datatables_bootstrap_css %}
+    
+    <!-- JAVASCRIPTS -->
+
+    {% datatables_js %}
+    {% datatables_bootstrap_js %}
+    <script type="text/javascript" src="/static/js/lotes.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/lotes.css">
+
+{% endblock %}
+  
+{% block body %}
+    <div class="row center">
+        <div class="col-sm-12">
+            <h1 style="margin:0px 0px 0px 0px;"> Gestión de Lotes </h1>
+        </div>
+    </div>
+    <div class ="row">
+        <div class="btn-group">
+            <button type="button" class="btn btn-sm btn-warning" onclick="ingresarLote()">Ingresar Lote</button>
+            <!--<button type="button" class="btn btn-sm btn-warning">Listar Lotes</button>
+            <button type="button" class="btn btn-sm btn-warning">Accion 3</button>-->
+        </div>
+    </div>
+    <div class="row top-margin">
+        <table  id="tabla-lotes" class="table table-bordered table-condensed table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Id Lote</th>
+                    <th>Apiario</th>
+                    <th>Socio</th>
+                    <th>Peso</th>
+                    <th>Observación</th>
+                    <th>Estado Actual</th>
+                    <th>Cambiar de Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for lote in lotes %}
+            <tr id="tr-{{lote.idLote}}">
+                <td name="idLote">{{lote.idLote}}</td>
+                <td>{{ lote.apiario }}</td>
+                <td>{{ lote.apiario.socio }}</td>
+                <td>{{ lote.peso }}</td>
+                <td>{{ lote.observacion }}</td>
+                <td class="center">
+                    {% if lote.estadoActual|stringformat:"s" == "Ingresado" %}
+                        <p class="etiqueta"><span id="lb-estado-{{lote.idLote}}" class="label label-success">{{ lote.estadoActual }}</span></p>
+                    {% endif %}
+                    {% if lote.estadoActual|stringformat:"s" == "Devuelto" %}
+                        <p class="etiqueta"><span id="lb-estado-{{lote.idLote}}" class="label label-primary">{{ lote.estadoActual }}</span></p>
+                    {% endif %}
+                    {% if lote.estadoActual|stringformat:"s" == "Extraido" %}
+                        <p class="etiqueta" ><span id="lb-estado-{{lote.idLote}}" class="label label-warning">{{ lote.estadoActual }}</span></p>
+                    {% endif %}
+                </td>
+                <td class="center">
+                    {% if lote.estadoActual|stringformat:"s" == "Ingresado" %}
+                        <button type="button" id="{{lote.idLote}}" class="btn btn-warning btn-xs btn-estado">Extraer</button>
+                    {% endif %}
+                    {% if lote.estadoActual|stringformat:"s" == "Devuelto" %}
+                        <!--<button type="button" id="{{lote.idLote}}" class="btn btn-danger btn-xs btn-estado" disabled="disabled"><span class="glyphicon glyphicon-ban-circle"></span></button>-->
+                    {% endif %}
+                    {% if lote.estadoActual|stringformat:"s" == "Extraido" %}
+                        <button type="button" id="{{lote.idLote}}" class="btn btn-primary btn-xs btn-estado">Devolver</button>
+                    {% endif %}
+                </td>
+                <td class="center">
+                    {% if lote.estadoActual|stringformat:"s" == "Ingresado" %}
+                        <button type="button" class="btn btn-muyoscuro btn-xs" onclick="editarLote({{lote.idLote}})">Editar</button>
+                    {% else %}
+                        <button type="button" class="btn btn-muyoscuro btn-xs" disabled="disabled" onclick="editarLote({{lote.idLote}})">Editar</button>
+                    {% endif %}
+                    <button type="button" class="btn btn-danger btn-xs" onclick="eliminarLote({{lote.idLote}})">Eliminar</button>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div><!-- /.modal -->
+{% endblock %}

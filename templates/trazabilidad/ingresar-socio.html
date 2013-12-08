@@ -1,0 +1,45 @@
+{% extends "trazabilidad/base.html" %}
+{% block head %}
+    <title>Ingreso de Socio</title>
+    <script src="{{ STATIC_URL }}js/jquery.formset.min.js"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="row center">
+            <div class="col-sm-12">
+                <h1> Ingresar Socio </h1>
+            </div>
+        </div>
+        <form class="form-horizontal" action="." method="post">
+            <div class="col-md-10">
+                <legend>Socio</legend>
+                {% csrf_token %}
+                {% for f in form %}
+                    {% if f.errors %}
+                        <div class="form-group alert alert-danger">
+                            <label class="col-md-2 control-label" for="input{{f.label}}">{{f.label}}</label>
+                            <div class="col-md-10">
+                                {{f}}
+                                <span class="help-inline">
+                                    {% for error in  f.errors %}{{ error }}{% endfor %}
+                                </span>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="input{{f.label}}">{{f.label}}</label>
+                            <div class="col-md-10">
+                                {{f}}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                {{ form.management_form }}
+                {{ form.non_form_errors }}            
+                 <hr>   
+                <input type="submit" value="Guardar" class="submit btn btn-primary" />
+            </div>
+        </form>
+    </div>
+{% endblock %}

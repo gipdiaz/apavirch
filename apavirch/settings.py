@@ -23,6 +23,8 @@ DATABASES = {
     }
 }
 
+CAPACIDAD_TAMBOR = 100
+
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
@@ -69,7 +71,7 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = os.path.join(PROJECT_ROOT,'static/')
+STATIC_ROOT = os.path.join(PROJECT_ROOT,'static-root/')
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -77,9 +79,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    # Put strings here, like "/home/html/static" or "C:/www/django/static".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
+    os.path.join(PROJECT_ROOT,'static/'),
 )
 
 # List of finder classes that know how to find static files in
@@ -113,17 +113,6 @@ ROOT_URLCONF = 'apavirch.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'apavirch.wsgi.application'
 
-# Django-Registration config
-ACCOUNT_ACTIVATION_DAYS = 7
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
-EMAIL_HOST_USER = ""
-EMAIL_HOST_PASSWORD = ""
-EMAIL_USE_TLS = False
-DEFAULT_FROM_EMAIL = 'testing@example.com'
-
-from registration_defaults.settings import *
-
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
@@ -134,6 +123,7 @@ TEMPLATE_DIRS = (
 
 INSTALLED_APPS = (
     'django_extensions',
+    #'django_admin_bootstrapped.bootstrap3',
     'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.admindocs',
@@ -144,10 +134,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'django_extensions',
-    'registration',
     'trazabilidad',
     'south',
+    'eztables',
 )
 
 #AUTOREPORTS_USE_CMSUTILS = False

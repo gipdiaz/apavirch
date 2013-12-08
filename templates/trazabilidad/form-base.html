@@ -1,0 +1,26 @@
+{% extends "trazabilidad/base.html" %}
+
+{% block body %}
+	<form class="form-horizontal"  method="post" action="{% block action-form %}{% endblock %}" onsubmit="{% block submit-form %}{% endblock %}" onclick="{% block onclick-form %} {% endblock %}">          
+		
+		<!-- Titulo Form -->
+		<div class="span offset1">
+        	<h1><small>	
+            	{% block titulo-form %}
+                {% endblock %}        
+            </small></h1>
+        </div>
+        
+        <!-- Contenido Form -->                
+        {% block form-content %}
+        {% endblock %}
+                
+        <input type="hidden" name="form_id" value=""/>
+        <div class="control-group">
+			<div class="controls">
+				<input class="btn btn-info" type="submit" name="submit" value="Guardar"/>
+			</div>
+		</div>
+	</form>
+
+{% endblock %}

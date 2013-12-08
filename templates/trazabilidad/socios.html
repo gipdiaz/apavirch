@@ -1,0 +1,111 @@
+{% extends "trazabilidad/base.html" %}
+
+{% block head %}
+	<title>Gestión de Socios</title>
+
+    {% load eztables %}
+
+    <!-- STYLES -->
+
+    {% datatables_bootstrap_css %}
+    
+    <!-- JAVASCRIPTS -->
+
+    {% datatables_js %}
+    {% datatables_bootstrap_js %}
+    <script type="text/javascript" src="/static/js/socios.js"></script>
+
+{% endblock %}
+  
+{% block body %}
+    <div class="row center">
+        <div class="col-sm-12">
+            <h1> Gestión de Socios </h1>
+        </div>
+    </div>
+    <div class ="row">
+        <div class="btn-group">
+            <button type="button" class="btn btn-sm btn-warning" onclick="ingresarSocio()">Ingresar Socio</button>
+            <button type="button" class="btn btn-sm btn-warning">Listar Socios</button>
+            <button type="button" class="btn btn-sm btn-warning">Accion</button>
+        </div>
+    </div>
+    <div class="row top-margin">
+        <table  id="tabla-socios" class="table table-bordered table-condensed table-striped table-hover">
+           <thead>
+                <tr>
+                    <th>CUIT / CUIL</th>
+                    <th>Nro Renapa</th>
+                    <th>Nombre y Apellido</th>
+                    <th>Estado Actual</th>
+                    <th>Cambiar de Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for socio in socios %}
+			 <tr>
+                  <td name="codigoUnicoIdentif">{{socio.codigoUnicoIdentif}}</td>
+                  <td>{{ socio.nroRenapa }}</td>
+	              <td>{{ socio.nombreYApellido }}</td>
+	              <td class="center">                    
+	                  {% if socio.estadoActual.descripcion|stringformat:"s" == "A Prueba" %}
+	                       <p style="font-size:16px;margin:0px 0px 5px 0px;">
+								<span id="lb-estado-{{ socio.codigoUnicoIdentif }}" class="label label-success">
+									{{ socio.estadoActual }}</span>
+							</p>
+	                  {% endif %}
+	                  {% if socio.estadoActual.descripcion|stringformat:"s" == "Activo" %}
+	                       <p style="font-size:16px;margin:0px 0px 5px 0px;">
+								<span id="lb-estado-{{ socio.codigoUnicoIdentif }}" class="label label-warning">
+									{{ socio.estadoActual }}</span>
+							</p>
+	                  {% endif %}
+	                  {% if socio.estadoActual.descripcion|stringformat:"s" == "Inactivo" %}
+	                        <p style="font-size:16px;margin:0px 0px 5px 0px;">
+								<span id="lb-estado-{{ socio.codigoUnicoIdentif }}" class="label label-warning">
+									{{ socio.estadoActual }}</span>
+							</p>
+	                  {% endif %}
+                </td>
+
+                <td class="center">
+                    {% if socio.estadoActual.descripcion|stringformat:"s" == "A Prueba" %}
+                        <button type="button" id="{{socio.codigoUnicoIdentif}}" 
+							class="btn btn-warning btn-xs btn-estado">Activar</button>
+                    {% endif %}
+                    {% if socio.estadoActual.descripcion|stringformat:"s" == "Activo" %}
+                        <button type="button" id="{{socio.codigoUnicoIdentif}}" 
+							class="btn btn-danger btn-xs btn-estado">Desactivar</button>
+                    {% endif %}
+                </td>  
+
+                <td class="center"> 
+                    {% if socio.estadoActual.descripcion|stringformat:"s" == "Inactivo" %}            
+                    <button type="button" class="btn btn-info btn-xs" 
+						onclick="editarSocio({{socio.codigoUnicoIdentif}})" disabled>Editar</button>
+                    <button type="button" class="btn btn-danger btn-xs"
+ 						onclick="eliminarSocio({{socio.codigoUnicoIdentif}})" disabled>Eliminar</button>
+                    <a href="/socios/marcas-socio/{{socio.codigoUnicoIdentif}}/" class="btn btn-lima btn-xs" 
+                        data-toggle="modal" data-target="#myModal" disabled>Marcas</a>
+                    {% endif %}
+                    {% if socio.estadoActual.descripcion|stringformat:"s" != "Inactivo" %}
+                        <button id="btn_editar_{{ socio.codigoUnicoIdentif }}" type="button" class="btn btn-info btn-xs" 
+                            onclick="editarSocio({{socio.codigoUnicoIdentif}})">Editar</button>
+                        <button id="btn_editar_{{ socio.codigoUnicoIdentif }}" type="button" class="btn btn-danger btn-xs"
+                            onclick="eliminarSocio({{socio.codigoUnicoIdentif}})">Eliminar</button>
+                        <a id="btn_editar_{{ socio.codigoUnicoIdentif }}" 
+                            href="/socios/marcas-socio/{{socio.codigoUnicoIdentif}}/" class="btn btn-lima btn-xs" 
+                            data-toggle="modal" data-target="#myModal">Marcas</a>
+                    {% endif %}   
+                </td>                
+            </tr>
+            {% endfor %}
+            </tbody> 
+        </table>
+
+    <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+    </div>
+{% endblock %}

@@ -1,32 +1,57 @@
 from django import forms
 from django.forms.models import BaseInlineFormSet
+from .models import Lote, GrupoAlza, Socio, SocioMarca
+from django.forms import ModelForm
+from django.forms.models import inlineformset_factory
+from django.core.exceptions import ValidationError
 
-__all__ = ('RequireOneFormSet',)
 
-class RequireOneFormSet(BaseInlineFormSet):
-    """Require at least one form in the formset to be completed."""
+class FormLote(ModelForm):
+    class Meta:
+	    fields = ('apiario','peso','observacion')
+	    model = Lote
+
+class GAForm(ModelForm):
+    class Meta:
+        model = GrupoAlza
+
+class GrupoAlzaRequiredFormSet(forms.models.BaseInlineFormSet):
+
     def clean(self):
-        """Check that at least one form has been completed."""
-        super(RequireOneFormSet, self).clean()
-        for error in self.errors:
-            if error:
-                return
-        completed = 0
-        for cleaned_data in self.cleaned_data:
-            # form has data and we aren't deleting it.
-            
-            if cleaned_data and not cleaned_data.get('DELETE', False):
-                completed += 1
 
-        if completed < 1:
-            raise forms.ValidationError("Al menos se requiere uno.",
-                self.model._meta.object_name.lower())
+        super(GrupoAlzaRequiredFormSet, self).clean()
+
+        count = 0
+        for form in self.forms:
+            try:
+                if form.cleaned_data:
+                    count += 1
+            except AttributeError:
+                pass
+        if count < 1:
+            raise forms.ValidationError('Se necesita al menos un Grupo de Alza')
+
+GrupoAlzaFormSet = inlineformset_factory(Lote, GrupoAlza,form=GAForm,formset=GrupoAlzaRequiredFormSet, extra=1, max_num=3, fields=("idGrupoAlza","tipoAlza","lote","cantidadAlzas","peso"))
+
+
+class FormSocio(ModelForm):
+    Prueba = forms.CharField(max_length= 100)
+    class Meta:
+        fields = ('codigoUnicoIdentif' ,'tipoDocumento', 'nroDocumento','nombreYApellido','direccion','telefono','email', 'nroRenapa')
+        model = Socio
     
 
+class FormSocioEditar(ModelForm):
+    class Meta:
+        fields = ('codigoUnicoIdentif' ,'tipoDocumento', 'nroDocumento','nombreYApellido','direccion','telefono','email', 'nroRenapa')
+        model = Socio
 
-class RequireOneFormSetAlza(RequireOneFormSet):
-    '''
-        Clase formset para grupo de alzas
-    '''
-    def vvv(self):
-        print 'sd'
+class FormSocioMarca(ModelForm):
+    class Meta:
+        model = SocioMarca
+
+
+
+
+
+

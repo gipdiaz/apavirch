@@ -1,0 +1,34 @@
+{% extends "trazabilidad/modal.html" %}
+{% block modaltitle %}
+Marcas de {{ socio.nombreYApellido }}
+{% endblock %}
+{% block modalbody %}
+
+  <div class="row top-margin">
+        <table  id="tabla-socios" class="table table-condensed table-hover">
+           <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Marca</th>
+                    <th>Tipo de Marca</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+            {% for marca in marcas %}
+			       <tr>
+                  <td name="id">{{ marca.id }}</td>
+                  <td>{{ marca.descripcion }}</td>
+                  <td>{{ marca.tipoMarca_id }}</td>	                
+	                <td class="center">                    
+	                    <input type="checkbox">
+                  </td>
+            </tr>
+            {% endfor %}
+            </tbody> 
+        </table>
+
+    <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    </div>
+{% endblock %}

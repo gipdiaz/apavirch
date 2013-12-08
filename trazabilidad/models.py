@@ -1,26 +1,27 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
+from django.conf import settings
+
 ## ------------------------------------------- ##
-class Envase_tipo (models.Model):
-    MATERIAL = (
-        ('VIDRIO', 'VIDRIO'),
-        ('PLASTICO', 'PLASTICO'),        
-    )             
-    idEnvaseTipo = models.AutoField (primary_key = True)
-    marca = models.CharField( max_length = 30, blank = False)
-    capacidad = models.IntegerField (default = 1, blank = False)
-    material = models.CharField (max_length = 30, choices = MATERIAL)
+class TipoEnvase (models.Model):
+    idTipoEnvase = models.AutoField (primary_key = True)
+    fabricante = models.CharField( max_length = 30, blank = False)
+    peso = models.IntegerField (default = 1, blank = False)
+    descripcion = models.CharField( max_length = 30, blank = False)
     
     class Meta:
-        unique_together = ("idEnvaseTipo","marca","capacidad")
+        unique_together = ("fabricante","peso")
         verbose_name_plural = "Tipos de Envases"
 
     def __unicode__(self):
-        return u'%s %s %s' % (self.envase_tipo_id, self.capacidad, self.marca)
+        return u'%s %s %s' % (self.peso, self.fabricante)
+
 ## ------------------------------------------- ##
 class TipoDocumento (models.Model):
-    documento_tipo_id = models.CharField (max_length = 2, primary_key = True)
+    idTipoDocumento = models.AutoField(primary_key = True)
     descripcion = models.CharField(max_length = 30, blank = False)
     
     class Meta:
@@ -28,6 +29,7 @@ class TipoDocumento (models.Model):
     
     def __unicode__(self):
         return self.descripcion
+
 ## ------------------------------------------- ##
 class TipoAlza (models.Model):
     idTipoAlza = models.AutoField (primary_key = True)
@@ -37,240 +39,358 @@ class TipoAlza (models.Model):
         verbose_name_plural = "Tipos de Alzas"
     
     def __unicode__(self):
-        return self.descripcion    
+        return self.descripcion
+
 ## ------------------------------------------- ##
-class Ciudad(models.Model):    
+class TipoMarca (models.Model):
+    idTipoMarca = models.AutoField (primary_key = True)
+    descripcion = models.CharField(max_length = 100, blank = False)
+    
+    class Meta:
+        verbose_name_plural = "Tipos de Marcas"
+    
+    def __unicode__(self):
+        return self.descripcion    
+
+## ------------------------------------------- ##
+class Ciudad(models.Model):
     codigoPostal = models.IntegerField(default = 0, primary_key = True)
-    descripcion = models.CharField(max_length = 30, blank = False)
-    added_by = models.ForeignKey('auth.User')
+    nombre = models.CharField(max_length = 30, blank = False)
     
     class Meta:
         verbose_name_plural = "Ciudades"
     
     def __unicode__(self):
-        return self.descripcion
-## ------------------------------------------- ##
-class Direccion (models.Model):    
-    idDireccion = models.AutoField(primary_key = True)
-    calle = models.CharField(max_length = 30, blank = False)
-    numero = models.IntegerField(default=0)
-    ciudad = models.ForeignKey(Ciudad, null = False)
-    
-    class Meta:
-        verbose_name_plural = "Direcciones"
-    
-    def __unicode__(self):
-        return (self.calle, self.numero, self.ciudad)
+        return self.nombre
+
 ## ------------------------------------------- ##
 class Marca (models.Model):
     idMarca = models.AutoField(primary_key = True)
-    nombre = models.CharField (max_length =20, primary_key = True)   
-    habilitada = models.BooleanField (default = False)
+    descripcion = models.CharField (max_length =20)
+    tipoMarca = models.ForeignKey(TipoMarca, null=False)
     
     class Meta:
+        unique_together = ("descripcion","tipoMarca")
         verbose_name_plural = "Marcas"
-    
+
     def __unicode__(self):
-        return u'%s' % (self.nombre)
+        return u'%s %s' % (self.descripcion, self.tipoMarca)
+
 ## ------------------------------------------- ##
 class Persona (models.Model):
     codigoUnicoIdentif = models.IntegerField(primary_key = True, blank = False) #CUIT / CUIL, verificar sea correcto
-    user = models.OneToOneField(User)
     tipoDocumento = models.ForeignKey(TipoDocumento, null = False)
     nroDocumento = models.IntegerField(blank = False)
-    nombre = models.CharField(max_length=200, blank = False)       
-    fechaAlta = models.DateTimeField('Fecha de alta', default = timezone.now())
+    nombreYApellido = models.CharField(max_length=200, blank = False)       
+    direccion = models.CharField(max_length = 30, blank = False)
     telefono = models.IntegerField(default = 0)
     email = models.EmailField(max_length = 75)
-    marcas = models.ManyToManyField(Marca)
+    fechaAlta = models.DateTimeField(default = timezone.now())
     
     class Meta:
+        abstract = True
         verbose_name_plural = "Personas"
     
     def __unicode__(self):
-        return self.nombre    
+        return self.nombreYApellido
+
 ## ------------------------------------------- ##
-class Socio(models.Model):
-    SOCIO_ESTADOS = (
-        ('INACTIVO', 'INACTIVO'),
-        ('A PRUEBA', 'A PRUEBA'),
-        ('ACTIVO', 'ACTIVO'),        
-    )             
-    idRenapa = models.CharField(max_length=200, primary_key=True, blank = False)    
-    persona = models.ForeignKey (Persona, null=False)
-    estado = models.CharField(max_length=8, choices=SOCIO_ESTADOS)
+# class Operario(models.Model):
+#     user = models.OneToOneField(User)
+#     tipoOperario = models.ForeignKey(TipoOperario, null = False)
+    
+#     class Meta:
+#         verbose_name_plural = "Operarios"
+    
+#     def __unicode__(self):
+#         return self.nombre
+
+## ------------------------------------------- ##
+class Socio(Persona):
+    nroRenapa = models.CharField(unique=True, max_length=200, blank = False)
+    marcas = models.ManyToManyField(Marca, through="SocioMarca")
+
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    estadoActual = generic.GenericForeignKey('content_type', 'object_id')
+
+    def activar(self):
+        #import pdb; pdb.set_trace()
+        estado = Activo(descripcion="Activo")
+        estado.save()
+        self.content_type = ContentType.objects.get_for_model(estado)
+        self.object_id = estado.pk
+        self.save()
+        estado.socio = self
+        estado.save()
+
+    def desactivar(self):
+        #import pdb; pdb.set_trace()
+        estado = Inactivo(descripcion="Inactivo")
+        estado.save()
+        self.content_type = ContentType.objects.get_for_model(estado)
+        self.object_id = estado.pk
+        self.save()
+        estado.socio = self
+        estado.save()
+
+    def probar(self, periodo):
+        #import pdb; pdb.set_trace()
+        estado = Prueba(descripcion="A Prueba", periodoAPrueba=periodo)
+        estado.save()
+        self.content_type = ContentType.objects.get_for_model(estado)
+        self.object_id = estado.pk
+        self.save()
+        estado.socio = self
+        estado.save()
     
     class Meta:
-        unique_together = ("idRenapa","persona")
         verbose_name_plural = "Socios"
     
     def __unicode__(self):
-        return self.persona.nombre
+        return u'Socio %s - Estado %s' % (self.nombreYApellido, self.content_type)
+
+## ------------------------------------------- ##        
+class SocioEstado(models.Model):
+    idSocioEstado = models.AutoField(primary_key = True)
+    descripcion = models.CharField(max_length=200, blank = True)
+    fecha = models.DateTimeField(default = timezone.now())
+    socio = models.ForeignKey(Socio, null=True)
+
+    class Meta:
+        abstract = True
+        verbose_name_plural = "Estados de los Socios"
+
+## ------------------------------------------- ##
+class Prueba(SocioEstado):
+    #idPrueba = models.AutoField(primary_key = True)
+    periodoAPrueba = models.CharField(max_length=100, blank = False)
+
+    class Meta:
+        verbose_name_plural = "Estado Prueba de los Socios"
+
+    def __unicode__(self):
+        return u'%s' % (self.__class__.__name__)
+
+
+## ------------------------------------------- ##
+class Activo(SocioEstado):
+    #idActivo = models.AutoField(primary_key = True)
+
+    class Meta:
+        verbose_name_plural = "Estado Activo de los Socios"
+
+
+    def __unicode__(self):
+        return u'%s' % (self.__class__.__name__)
+
+## ------------------------------------------- ##
+class Inactivo(SocioEstado):
+    #idInactivo = models.AutoField(primary_key = True)
+
+    class Meta:
+        verbose_name_plural = "Estado Inactivo de los Socios"
+        
+    def __unicode__(self):
+        return u'%s' % (self.__class__.__name__)
+
+## ------------------------------------------- ##
+class SocioMarca (models.Model):
+    idSocioMarca = models.AutoField (primary_key = True)    
+    socio = models.ForeignKey (Socio, null=False)           
+    marca = models.ForeignKey (Marca, null=False)
+    fechaAlta = models.DateTimeField(default = timezone.now())
+    fechaValidez = models.DateTimeField(blank=True)
+
+    class Meta:
+        unique_together = ("socio", "marca")
+        verbose_name_plural = "Socios Marcas"
+    
+    def __unicode__(self):
+        pass
+
 ## ------------------------------------------- ##
 class Apiario(models.Model):         
-    idChacra = models.CharField(primary_key=True,max_length = 30, blank=False)
+    nroChacra = models.CharField(primary_key=True,max_length = 30, blank=False)
     socio = models.ForeignKey(Socio, null = False)
-    nroColmena = models.IntegerField(default = 0)     
-    fechaAlta = models.DateTimeField('Fecha de alta', default = timezone.now())
+    cantidadColmenas = models.IntegerField(default = 0)
+    fechaAlta = models.DateTimeField(default = timezone.now())
+    operario = models.ForeignKey(User, null=False)
     
     class Meta:
         verbose_name_plural = "Apiarios"
     
     def __unicode__(self):
-        return self.nro_chacra
+        return u'Cracha %s' % (self.nroChacra)
+
 ## ------------------------------------------- ##
 class Inspeccion(models.Model):             
-    idInspeccion = models.AutoField(primary_key = True, unique_for_year = True)     
-    apiario = models.ForeignKey(Apiario)    
+    idInspeccion = models.AutoField(primary_key = True)     
+    apiario = models.ForeignKey(Apiario, null=False)
+    tipoMarca = models.ForeignKey(TipoMarca, null=False)
     fechaInspeccion = models.DateTimeField('Fecha de Inspeccion', blank = False)
+    cumpleProtocolo = models.BooleanField (default = False)
     observacion = models.CharField(max_length=300, blank = False)
-    habilita = modelhabilitas.BooleanField (default = False)
+    operario = models.ForeignKey(User, null=False)
     
     class Meta:
-        unique_together =  ("idInspeccion", "apiario")
         verbose_name_plural = "Inspecciones"
     
     def __unicode__(self):
         return self.observacion
+
 ## ------------------------------------------- ##
 class Lote(models.Model):             
-    idLote = models.AutoField(primary_key= True, unique_for_year = True)     
+    idLote = models.AutoField(primary_key= True)
     apiario = models.ForeignKey(Apiario)
-    fechaIngreso = models.DateTimeField('Fecha de Ingreso', default = timezone.now())
-    fechaEgreso = models.DateTimeField ('Fecha de Egreso', blank = True, null = True)
     peso = models.DecimalField(max_digits = 10, decimal_places = 2, blank = True, default = 0)
     observacion = models.CharField(max_length=300)
-    devuelto = models.BooleanField (default = False)
+
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    estadoActual = generic.GenericForeignKey('content_type', 'object_id')
 
     class Meta:
-        unique_together = ("nro_lote","apiario")
         verbose_name_plural = "Lotes"
-    
-    def update_total_peso(self, peso_total):
-        self.peso = peso_total
+
+    def extraer(self, user, peso):
+        #import pdb; pdb.set_trace()
+        estado = Extraido(observacion='Extraido', peso=peso, operario=user)
+        estado.save()
+
+        while peso > settings.CAPACIDAD_TAMBOR:
+            tambor = Tambor (loteExtraido = estado, peso = settings.CAPACIDAD_TAMBOR, operario = user)
+            tambor.save()
+            peso = peso - settings.CAPACIDAD_TAMBOR
+        if peso!= 0:
+            tambor = Tambor (loteExtraido = estado, peso = peso, operario = user)
+            tambor.save()
+
+        self.content_type = ContentType.objects.get_for_model(estado)
+        self.object_id = estado.pk
         self.save()
+        estado.lote = self
+        estado.save()
+
+    def devolver(self, user):
+        #import pdb; pdb.set_trace()
+        estado = Devuelto(observacion='Devuelto', peso=20, operario=user)
+        estado.save()
+        self.content_type = ContentType.objects.get_for_model(estado)
+        self.object_id = estado.pk
+        self.save()
+        estado.lote = self
+        estado.save()
 
     def __unicode__(self):
-        return str(self.nro_lote)
-## ------------------------------------------- ##
-class GrupoAlza (models.Model):             
-    ALZA_ESTADOS = (
-        ('LLENA','LLENA'),
-        ('VACIA','VACIA')
-    )             
-    idAlza = models.AutoField (primary_key = True)
-    tipoAlza = models.ForeignKey(TipoAlza, null = False)
-    lote = models.ForeignKey(Lote, null = False, related_name='alza')
-    cantidadAlzas = models.IntegerField(blank = False)     
-    peso = models.DecimalField(max_digits = 6, decimal_places = 2, blank = False)    
+        return u'Lote numero %s - Estado %s' % (self.idLote, self.content_type)
+
+## ------------------------------------------- ##        
+class LoteEstado(models.Model):
+    idLoteEstado = models.AutoField(primary_key = True, blank = False)
+    observacion = models.CharField(max_length=200, blank = True)
+    peso = models.DecimalField(max_digits = 10, decimal_places = 2, null = False)
+    fecha = models.DateTimeField(default = timezone.now())
+    operario = models.ForeignKey(User, null=False)
+    lote = models.ForeignKey(Lote, null=True)
 
     class Meta:
-        unique_together = ("lote", "alza_tipo")
-        verbose_name_plural = "Grupos de Alzas"
-        verbose_name = "Grupo de Alza"
-    
-    def __unicode__(self):
-        return str(self.nro_alza)
+        abstract = True
+        verbose_name_plural = "Estados de los Lotes"
+
 ## ------------------------------------------- ##
-class Extraccion (models.Model):
-    idExtraccion = models.AutoField (primary_key = True, unique_for_year = True)
-    lote = models.OneToOneField (Lote)
-    operario = models.ForeignKey (Persona, null = False)
-    peso = models.DecimalField(max_digits = 6, decimal_places = 2, blank = False)
-    fecha = models.DateTimeField ('Fecha de Extraccion', default = timezone.now())
-    observacion = models.CharField (max_length = 300, blank = True)
-    
+class Ingresado(LoteEstado):
+
     class Meta:
-        verbose_name_plural = "Extracciones"
-    
+        verbose_name_plural = "Estado Ingresado de los Lotes"
+
     def __unicode__(self):
-        return u'%s' % (self.nro_extraccion)
+        return u'%s' % (self.__class__.__name__)
+## ------------------------------------------- ##
+class Devuelto(LoteEstado):
+
+    class Meta:
+        verbose_name_plural = "Estado Devuelto de los Lotes"
+
+    def __unicode__(self):
+        return u'%s' % (self.__class__.__name__)
+
+## ------------------------------------------- ##
+class Extraido(LoteEstado):
+
+    class Meta:
+        verbose_name_plural = "Estado Extraido de los Lotes"
+
+    def __unicode__(self):
+        return u'%s' % (self.__class__.__name__)
 
 ## ------------------------------------------- ##
 class Tambor (models.Model):
     idTambor = models.AutoField (primary_key = True)
-    extraccion = models.ForeignKey (Extraccion, null = False)
+    loteExtraido = models.ForeignKey (Extraido, null = False)
     peso = models.DecimalField (max_digits = 6, decimal_places = 2, blank = False)
+    fraccionado = models.BooleanField(default = False)
+    operario = models.ForeignKey(User, null=False)
     
     class Meta:
-        unique_together =  ("idTambor","extraccion")
         verbose_name_plural = "Tambores"
     
     def __unicode__(self):
-        return u'%s' % (self.nro_tambor)
-## ------------------------------------------- ##
-# class Marca_Persona (models.Model):
-#     codigo = models.AutoField (primary_key = True)    
-#     socio = models.ForeignKey (Socio)           
-#     marca = models.ForeignKey (Marca)  
+        return u'%s %s' % (self.idTambor, self.loteExtraido)
 
-#     class Meta:
-#         unique_together = ("socio", "marca")
-#         verbose_name_plural = "Marcas Personas"
+## ------------------------------------------- ##
+class GrupoAlza (models.Model):             
+    idGrupoAlza = models.AutoField (primary_key = True)
+    tipoAlza = models.ForeignKey(TipoAlza, null = False)
+    lote = models.ForeignKey(Lote, null = False, related_name='alza')
+    cantidadAlzas = models.IntegerField(blank = False)     
+    peso = models.DecimalField(max_digits = 6, decimal_places = 2, blank = False)
+
+    class Meta:
+        unique_together = ("lote", "tipoAlza")
+        verbose_name_plural = "Grupos de Alzas"
     
-#     def __unicode__(self):
-#         pass
+    def __unicode__(self):
+        return u'%s %s %s' % (self.idGrupoAlza, self.tipoAlza, self.lote)
+
 ## ------------------------------------------- ##    
 class Fraccionamiento (models.Model):
     idFraccionamiento = models.AutoField (primary_key = True)
     tambor = models.OneToOneField (Tambor, null = False)
-    tipoEnvase = models.ForeignKey(tipoEnvase, null = False)
+    tipoEnvase = models.ForeignKey(TipoEnvase, null = False)
     marca = models.ForeignKey (Marca, null = False)
-    operador = models.ForeignKey(Persona, null = False)
+    operario = models.ForeignKey(User, null = False)
     cantidadEnvases = models.IntegerField (default = 0)
-    fecha = models.DateTimeField ('Fecha de Fraccionamiento', default = timezone.now())
+    fecha = models.DateTimeField (default = timezone.now())
 
     class Meta:
-        unique_together =  ("idFraccionamiento","tambor")
         verbose_name_plural = "Fraccionamientos"
     
     def __unicode__(self):
-        return u'%s' % (self.nro_fraccionamiento)
-
-    def save(self, *args, **kwargs):
-        
-        # Sino esta creado el fraccionamiento         
-        if not self.pk:
-            self.cantidad_envases = (self.tambor.peso / self.tipoEnvase.capacidad)
-        
-        # Se crea el fraccionamiento
-        super(Fraccionamiento, self).save(*args, **kwargs)
-        
-        # Se crean los envases
-        if self.pk:
-            for i in range(self.cantidadEnvases):
-                envase = Envase (fraccionamiento = self, tipoEnvase = self.tipoEnvase, operador = self.operador)
-                envase.save()
+        return u'%s %s %s %s' % (self.idFraccionamiento, self.tambor, self.tipoEnvase, self.marca)
 
 ## ------------------------------------------- ##
 class Remito (models.Model):
-    idRemito = models.AutoField (primary_key = True, unique_for_year = True)            
-    operador = models.ForeignKey(Persona, null = False)
-    fecha = models.DateTimeField ('Fecha de Retiro', default = timezone.now())
+    idRemito = models.AutoField (primary_key = True, )            
+    operario = models.ForeignKey(User, null = False)
+    fecha = models.DateTimeField (default = timezone.now())
     observacion = models.CharField (max_length = 100)
     
     class Meta:
         verbose_name_plural = "Remitos"
     
     def __unicode__(self):
-        return self.observacion
+        return u'%s %s' % (self.idRemito, self.observacion)
+
 ## ------------------------------------------- ##
 class RemitoDetalle (models.Model):
     idRemitoDetalle = models.AutoField (primary_key = True)
     remito = models.ForeignKey (Remito, null = False)
-    tambor = models.ForeignKey (Tambor)
+    tambor = models.ForeignKey (Tambor, null=True)
+    fraccionamiento = models.ForeignKey (Fraccionamiento, null=True)
     
-    class Meta:
-        unique_together =  ("nro_remito_detalle","renglon","nro_remito")
+    class Meta:        
         verbose_name_plural = "Detalles de Remitos"
     
     def __unicode__(self):
         pass
-
-from django.db.models.signals import pre_save
-
-def lote_handler(sender, instance,raw , **kwargs):
-    print sender
-    print instance.peso
-
-pre_save.connect(lote_handler, sender=Lote)

@@ -1,0 +1,108 @@
+{% load admin_static %}
+{% load url from future %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="es-AR">
+	<head>
+		
+	<title>{% block title %}APAVIRCH{% endblock %}</title>
+		
+  	<!-- METAS -->
+	
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- jQuery -->
+    <script type="text/javascript" src="/static/js/jquery-2.0.3.min.js"></script>
+
+    <!-- jQuery UI -->
+    <link type="text/css" rel="stylesheet"  href="/static/css/jquery-ui-1.10.3.custom.min.css">
+    <script type="text/javascript" src="/static/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <!--<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>-->
+
+    <!-- Bootstrap -->
+    <link type="text/css" rel="stylesheet"  href="/static/css/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet"  href="/static/css/bootstrap-theme.min.css">
+    <link type="text/css" rel="stylesheet"  href="/static/css/navbar.css">
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+
+     <!-- Bootbox -->
+    <script type="text/javascript" src="/static/js/bootbox.min.js"></script>
+
+    <!-- Css Base -->
+    <link type="text/css" rel="stylesheet"  href="/static/css/base.css">
+    
+  	{%block head %}{% endblock %}
+	</head>
+	<body >	
+	    <div class="navbar navbar-custom navbar-static-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/"><strong>APAVIRCH</strong></a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/lotes/">Lotes</a></li>
+                        <li><a href="/socios/">Socios</a></li>
+                        <li><a href="#">Reportes</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">ABM <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="/admin/trazabilidad/alza/"><strong>Alzas</strong></a></li>
+                                <li><a href="/admin/trazabilidad/apiario/"><strong>Apiarios</strong></a></li>
+                                <li><a href="/admin/trazabilidad/ciudad/"><strong>Ciudades</strong></a></li>
+                                <li><a href="/admin/trazabilidad/direccion/"><strong>Direcciones</strong></a></li>
+                                <li><a href="/admin/trazabilidad/envase/"><strong>Envases</strong></a></li>
+                                <li><a href="/admin/trazabilidad/extraccion/"><strong>Extracciones</strong></a></li>
+                                <li><a href="/admin/trazabilidad/fraccionamiento/"><strong>Fraccionamientos</strong></a></li>
+                                <li><a href="/admin/trazabilidad/inspeccion/"><strong>Inspecciones</strong></a></li>
+                                <li><a href="/admin/trazabilidad/lote/"><strong>Lotes</strong></a></li>
+                                <li><a href="/admin/trazabilidad/marca/"><strong>Marcas</strong></a></li>
+                                <li><a href="/admin/trazabilidad/persona/"><strong>Personas</strong></a></li>
+                                <li><a href="/admin/trazabilidad/remito/"><strong>Remitos</strong></a></li>
+                                <li><a href="/admin/trazabilidad/socio/"><strong>Socios</strong></a></li>
+                                <li><a href="/admin/trazabilidad/tambor/"><strong>Tambores</strong></a></li>
+                                <!--<li class="divider"></li>
+                                <li class="dropdown-header">Nav header</li>-->
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        {% if user.is_active and user.is_staff %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'Welcome,' %} <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong> <b class="caret"></b></a>
+                            <ul class="dropdown-menu pull-right">
+                                {% if user.has_usable_password %}
+                                <li><a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a></li>
+                                {% endif %}
+                                <li><a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a></li>
+                            </ul>
+                        </li>
+                        {% endif %}
+                        {% if user.is_active and user.is_superuser %}
+                        <li><a href="/admin/"><i class="icon-wrench icon-white"></i> Ingresar Admin</a></li>
+                        {% endif %}
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </div>
+	  	<div class="container">
+            {% block body %}
+            <div class="row">
+                <h1>Sistema de Gestión de APAVIRCH</h1>
+                {# <p class="lead">Descripción 1<br> Descripción 2</p> #}
+            </div>
+			{% endblock%}
+		</div>
+        <div class="footer text-center">
+            <p>&copy; <em>Díaz Gastón - Konstantinoff Pedro</em></p>
+        </div>
+	</body>
+</html>
