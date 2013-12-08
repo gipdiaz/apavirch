@@ -1,0 +1,44 @@
+{% extends "trazabilidad/modal.html" %}
+{% block modaltitle %}
+Tambores del lote número <strong>{{ lote.idLote }}</strong> del socio <strong>{{lote.apiario.socio.nombreYApellido}}</strong>
+{% endblock %}
+{% block modalbody %}
+    <script type="text/javascript">
+        function gstTambor () {
+            open("/tambores/","_self");
+        }
+        
+    </script>
+
+    <div class="row top-margin">
+        <table  id="tabla-tambores" class="table table-condensed table-hover">
+            <thead>
+                <tr>
+                    <th>idTambor</th>
+                    <th>peso</th>
+                    <th>Fraccionado</th>
+                    <th>Operario</th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for tambor in tambores %}
+    			      <tr>
+                      <td name="id">{{ tambor.idTambor }}</td>
+                      <td>{{ tambor.peso }}</td>
+                      <td>
+                            {% if tambor.fraccionado == False %}
+                                No
+                            {% else %}
+                                Si
+                            {% endif %}
+                      </td>	
+                      <td>{{tambor.operario}}</td>                
+                </tr>
+              {% endfor %}
+            </tbody> 
+        </table>
+{% endblock %}
+{% block modalfooter %}
+    <button type="button" class="btn btn-lima" onclick="gstTambor()">Gestión de Tambores</button>
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+{% endblock %}

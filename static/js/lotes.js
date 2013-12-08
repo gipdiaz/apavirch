@@ -38,10 +38,12 @@ $(function () {
                         +'</div>';
 
     $(document).ready(function(){
+
+        $('.btn-accion').tooltip();
         
         $('#tabla-lotes').dataTable({
             "oLanguage": {
-                "sUrl": "/static/js/libs/datatables/language.es.json"
+                "sUrl": "/static/js/libs/datatables/language.es.json",
             },
         });
         
@@ -98,6 +100,10 @@ $(function () {
                     alert(msj);
                 })
             };
-        });  
+        });
+        $(".btn-extraccion").click( function() {
+            var idLote = $(this).closest('tr').find('td:eq(0)').text();
+            $("#modal-extraer").load("/lotes/lote-extraido/"+idLote);
+        }); 
     }); 
 });

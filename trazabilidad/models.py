@@ -148,7 +148,7 @@ class Socio(Persona):
         verbose_name_plural = "Socios"
     
     def __unicode__(self):
-        return u'Socio %s - Estado %s' % (self.nombreYApellido, self.content_type)
+        return u'%s' % (self.nombreYApellido)
 
 ## ------------------------------------------- ##        
 class SocioEstado(models.Model):
@@ -207,7 +207,7 @@ class SocioMarca (models.Model):
         verbose_name_plural = "Socios Marcas"
     
     def __unicode__(self):
-        pass
+        return u'%s' % (self.socio)
 
 ## ------------------------------------------- ##
 class Apiario(models.Model):         
@@ -281,6 +281,9 @@ class Lote(models.Model):
         self.save()
         estado.lote = self
         estado.save()
+
+    def fueExtraido(self):
+        pass
 
     def __unicode__(self):
         return u'Lote numero %s - Estado %s' % (self.idLote, self.content_type)

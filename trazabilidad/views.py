@@ -45,10 +45,17 @@ class CrearLoteView(CreateView):
         else:
             return self.form_invalid(form, grupoAlza_form)
 
-    def form_valid(self, form, grupoAlza_form, user):   
-        estado = Ingresado(observacion='Ingresado', peso=form.cleaned_data['peso'], operario=user)
+    def form_valid(self, form, grupoAlza_form, user):
+        peso = 0
+        for f in grupoAlza_form:
+            try:
+                if f.cleaned_data['peso']:
+                    peso = peso + f.cleaned_data['peso']
+            except KeyError:
+                pass
+        estado = Ingresado(observacion='Ingresado', peso=peso, operario=user)
         estado.save()
-        lote = Lote(apiario=form.cleaned_data['apiario'], peso=form.cleaned_data['peso'], observacion=form.cleaned_data['observacion'], content_type = ContentType.objects.get_for_model(estado), object_id = estado.pk)
+        lote = Lote(apiario=form.cleaned_data['apiario'], peso=peso, observacion=form.cleaned_data['observacion'], content_type = ContentType.objects.get_for_model(estado), object_id = estado.pk)
         lote.save()
         estado.lote = lote
         estado.save()
@@ -104,9 +111,12 @@ class EditarLoteView(UpdateView):
                                   grupoAlza_form=grupoAlza_form))
 @login_required
 def lotes(request):
-	""" Gestion de lotes """
-	lotes = Lote.objects.all()
-	return render_to_response('trazabilidad/lotes.html',{'lotes':lotes},context_instance=RequestContext(request))
+    lts = Lote.objects.all()
+    for l in lts:
+        l.pepe = "pepe"
+    print lts[0].pepe
+    lotes = Lote.objects.all()
+    return render_to_response('trazabilidad/lotes.html',{'lotes':lotes},context_instance=RequestContext(request))
 
 @login_required
 def ingresarLote(request):
@@ -163,6 +173,10 @@ def devolverLote(request):
     else:
         return HttpResponse('No es una peticion Ajax')
 
+def loteExtraido(request, id):
+    lote = Lote.objects.get(pk=id)
+    tambores = Tambor.objects.filter(loteExtraido=lote)
+    return render_to_response('trazabilidad/lote-extraido.html',{'lote':lote, 'tambores':tambores}, context_instance=RequestContext(request))
 
 #################################################################
 
