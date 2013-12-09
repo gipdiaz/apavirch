@@ -351,10 +351,10 @@ def marcasSocio(request, id):
             i.checkSocioMarca = True            
         print '====='
         print marcasRelacionadas.values()
-        print marcasRelacionadas[0].checkSocioMarca
 
-        form = MarcaFormSet(queryset=marcasRelacionadas)
-     
+
+        form = MarcaFormSet(queryset=marcasRelacionadas)    
+        
 
         return render_to_response('trazabilidad/marcas-socio.html',
             {'form':form, 'socio':socio},
