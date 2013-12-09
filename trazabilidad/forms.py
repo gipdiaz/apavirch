@@ -57,10 +57,9 @@ class FormMarcasSocioCheck(Form):
 class FormTEST(ModelForm):
     checkSocioMarca = forms.BooleanField(required=False)
 
-
-
     class Meta:
-        model = Marca    
+        model = Marca
+        fields=('idMarca', 'descripcion', 'tipoMarca', 'checkSocioMarca')
 
 
 MarcaFormSet = modelformset_factory(Marca, form=FormTEST, extra = 0)

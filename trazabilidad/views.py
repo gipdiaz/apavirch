@@ -12,11 +12,14 @@ from .forms import FormLote, GrupoAlzaFormSet, FormSocioEditar, FormSocio, FormM
 from django.forms.models import model_to_dict
 from django.forms.models import inlineformset_factory
 from django.forms import Form
+
+# ================================= #
 @login_required
 def index(request):
     """ Index del sistema """
     return render_to_response('trazabilidad/index.html',context_instance=RequestContext(request))
 
+# ================================= #
 #@login_required
 class CrearLoteView(CreateView):
     template_name = 'trazabilidad/ingresar-lote.html'
@@ -178,7 +181,7 @@ def loteExtraido(request, id):
     tambores = Tambor.objects.filter(loteExtraido=lote)
     return render_to_response('trazabilidad/lote-extraido.html',{'lote':lote, 'tambores':tambores}, context_instance=RequestContext(request))
 
-#################################################################
+# ================================= #
 
 class CrearSocioView(CreateView):
     template_name = 'trazabilidad/ingresar-socio.html'
@@ -333,33 +336,31 @@ def marcasSocio(request, id):
                 return HttpResponseRedirect('/socios/')
         except ValidationError:
             pass
-
-
     else:
 
-        marcasRelacionadas = socio.getMarcasRelacionadas()
-        marcasDisponibles = socio.getMarcasDisponibles()
-        marcas = marcasDisponibles | marcasRelacionadas
-        initial_data = []
-        for marca in marcasDisponibles:            
-            initial_data.append({'descripcion':marca.descripcion, 'tipoMarca_id':marca.tipoMarca, 'idMarca':marca.idMarca})
+        #Consulta magica?
+        marcasSocio = Marca.objects.extra(select={'checkSocioMarca': 'SELECT CASE WHEN idMarca=marca_id THEN "True" ELSE "False" END FROM trazabilidad_sociomarca'})
+        checkInitial = []
+        for ms in marcasSocio:
+            checkInitial.append(ms.checkSocioMarca)
+        form = MarcaFormSet()
 
-        todasMarcas = Marca.objects.all()
-        print '====='
-        print marcasRelacionadas.values()
-        for i in marcasRelacionadas: 
-            i.checkSocioMarca = True            
-        print '====='
-        print marcasRelacionadas.values()
-        print marcasRelacionadas[0].checkSocioMarca
-
-        form = MarcaFormSet(queryset=marcasRelacionadas)
-     
+        # Guarda el valor de check en el form
+        i = 0
+        for i in xrange(form.total_form_count()-1):
+            form.forms[i].fields['checkSocioMarca'].initial = checkInitial[i]
 
         return render_to_response('trazabilidad/marcas-socio.html',
             {'form':form, 'socio':socio},
-            #{'form':form, 'marcasDisponibles':marcasDisponibles, 'socio':socio}, 
             context_instance=RequestContext(request))
 
-#################################################################
+# ================================= #
+
+@login_required
+def tambores(request):
+    """ Gestion de tambores """
+    tambores = Tambor.objects.all()
+    return render_to_response('trazabilidad/tambores.html',{'tambores':tambores},context_instance=RequestContext(request))
+
+
 
