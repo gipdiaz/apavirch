@@ -1,6 +1,6 @@
 from django import forms
 from django.forms.models import BaseInlineFormSet
-from .models import Lote, GrupoAlza, Socio, SocioMarca, Marca, Apiario
+from .models import Lote, GrupoAlza, Socio, SocioMarca, Marca, Apiario, Remito, RemitoDetalle
 from django.forms import ModelForm, Form
 from django.forms.models import inlineformset_factory, formset_factory, modelformset_factory
 from django.core.exceptions import ValidationError
@@ -36,7 +36,7 @@ GrupoAlzaFormSet = inlineformset_factory(Lote, GrupoAlza,form=GAForm,formset=Gru
 
 
 #-------------------------------------------------------#
-#--  Forms de Socio  --#
+#---------  Forms de Socio  ----------------------------#
 
 class FormSocio(ModelForm):
     #--  form para editar/ingresar socios cuyo estado es a prueba --#
@@ -72,7 +72,7 @@ ApiarioSocioFormSet = modelformset_factory(Apiario, extra = 1)
 
 
 #-------------------------------------------------------#
-#--   Forms de Remito  --#
+#---------  Forms de Remito  ---------------------------#
 
 class FormRemito(ModelForm):
     #--  form para editar/ingresar remitos--#

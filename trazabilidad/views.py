@@ -8,7 +8,7 @@ from django import forms
 from django.template import RequestContext, Template, Context
 from django.contrib.contenttypes.models import ContentType
 from .models import *
-from .forms import FormLote, GrupoAlzaFormSet, FormSocioEditar, FormSocio, FormMarcaSocio, MarcaFormSet, ApiarioSocioFormSet, FormRemito
+from .forms import FormLote, GrupoAlzaFormSet, FormSocioEditar, FormSocio, FormMarcaSocio, MarcaFormSet, ApiarioSocioFormSet, FormRemito, RemitoDetalleFormSet
 from django.forms.models import inlineformset_factory
 from django.forms import Form
 
@@ -483,6 +483,6 @@ def ingresarRemito(request):
             return HttpResponseRedirect(url)  
     else:
         form = formLote(request.POST)
-    return render_to_response('remitos/ingresar-remito.html',{'form':form, 'name':name}, context_instance=RequestContext(request))
+    return render_to_response('trazabilidad/ingresar-remito.html',{'form':form, 'name':name}, context_instance=RequestContext(request))
 
 
