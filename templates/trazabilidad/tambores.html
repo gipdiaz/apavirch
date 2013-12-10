@@ -13,6 +13,25 @@
 
     {% datatables_js %}
     {% datatables_bootstrap_js %}
+    <script type="text/javascript">
+        $(function () {$(document).ready(function(){
+            {% if buscar %}
+                var busqueda = "{{busqueda}}";
+                $('#tabla-lotes').dataTable({
+                    "oLanguage": {
+                        "sUrl": "/static/js/libs/datatables/language.es.json",
+                    },
+                    "oSearch": {"sSearch": busqueda},
+                });
+            {% else %}
+                $('#tabla-lotes').dataTable({
+                    "oLanguage": {
+                        "sUrl": "/static/js/libs/datatables/language.es.json",
+                    },
+                });
+            {% endif %}
+        });});
+    </script>
     <script type="text/javascript" src="/static/js/tambores.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/tambores.css">
 
@@ -35,7 +54,7 @@
         <table  id="tabla-lotes" class="table table-bordered table-condensed table-striped table-hover">
             <thead>
                 <tr>
-                    <th>Id Tambor</th>
+                    <th class="hidden"></th>
                     <th>Lote Extraido</th>
                     <th>Peso</th>
                     <th>Fraccionado</th>
@@ -48,8 +67,8 @@
             <tbody>
             {% for tambor in tambores %}
             <tr id="tr-{{tambor.idTambor}}">
-                <td name="idLote">{{tambor.idTambor}}</td>
-                <td>{{ tambor.loteExtraido }}</td>
+                <td class="hidden" name="idTambor">{{tambor.idTambor}}</td>
+                <td>Lote {{ tambor.loteExtraido.lote.pk }}</td>
                 <td>{{ tambor.peso }}</td>
                 <td>{{ tambor.fraccionado }}</td>
                 <td>{{ tambor.operario }}</td>

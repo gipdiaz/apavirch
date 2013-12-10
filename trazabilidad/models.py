@@ -300,7 +300,7 @@ class Lote(models.Model):
         #estado = Extraido(observacion=observacion, peso=peso, operario=user)
         #estado.save()
 
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
 
         estado = Extraido.objects.get(pk=self.object_id)
 

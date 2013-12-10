@@ -4,8 +4,21 @@ Tambores del lote número <strong>{{ lote.idLote }}</strong> del socio <strong>{
 {% endblock %}
 {% block modalbody %}
     <script type="text/javascript">
-        function gstTambor () {
-            open("/tambores/","_self");
+        function gstTambor (id) {
+            //$.get( "/tambores/", { id: id});
+            open("/tambores/?id="+id,"_self");
+            // $.ajax({
+            //       url: '/tambores/',
+            //       type: 'GET',
+            //       data:   {id: id,},
+            //   })
+            //   .done(function(msj) {
+            //       //alert(msj);
+            //       //open("/lotes/","_self"); 
+            //   })
+            //   .fail(function(msj) {
+            //       //alert(msj);
+            //   })
         }
         function dextraccionprevLote() {
           $('#form-peso').removeClass("hidden");
@@ -13,9 +26,9 @@ Tambores del lote número <strong>{{ lote.idLote }}</strong> del socio <strong>{
           $('#dextraccion').removeClass('hidden');
         }
         function dextraccionLote (id, pl) {
-          var peso = parseInt($('#form-peso').find("input[name=peso]").val(), 10);
+          var peso = parseFloat($('#form-peso').find("input[name=peso]").val(), 10).toFixed(2);
           var observacion = $('#form-peso').find("input[name=observacion]").val();
-          var pesolote = parseInt(pesolote, 10);
+          //var pesolote = parseFloat(pesolote, 10).toFixed(2);
           if ((peso > 0) && (peso < pl)) {
               $.ajax({
                   url: '/lotes/dextraer-lote/',
@@ -26,8 +39,8 @@ Tambores del lote número <strong>{{ lote.idLote }}</strong> del socio <strong>{
                   //context : btn,
               })
               .done(function(msj) {
-                alert(msj);
-                  open("/lotes/","_self");
+                  alert(msj);
+                  open("/lotes/","_self"); 
               })
               .fail(function(msj) {
                   alert(msj);
@@ -85,6 +98,6 @@ Tambores del lote número <strong>{{ lote.idLote }}</strong> del socio <strong>{
 {% block modalfooter %}
     <button type="button" id="dextraccion" class="hidden btn btn-warning" onclick="dextraccionLote({{lote.idLote}},{{lote.peso}})">Guardar</button>
     <button type="button" id="dextraccionprev" class="btn btn-warning" onclick="dextraccionprevLote()">Editar extracción</button>
-    <button type="button" class="btn btn-lima" onclick="gstTambor()">Gestión de Tambores</button>
+    <button type="button" class="btn btn-lima" onclick="gstTambor({{lote.idLote}})">Mas detalle</button>
     <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
 {% endblock %}

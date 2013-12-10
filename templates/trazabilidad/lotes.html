@@ -76,6 +76,7 @@
                 </td>
                 <td class="center">
                     {% if lote.estadoActual|stringformat:"s" == "Ingresado" %}
+                        <button id="btn-lote-{{lote.idLote}}" type="button" class="hidden btn btn-xs btn-lima btn-accion btn-extraccion" data-toggle="modal" data-target="#modal-extraer" data-toggle="tooltip" data-placement="top" data-original-title="Ver el lote extraido">Lote</button>&nbsp;&nbsp;
                         <button type="button" class="btn btn-muyoscuro btn-xs btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Editar el Lote" onclick="editarLote({{lote.idLote}})">
                             <span class="glyphicon glyphicon-edit"></span>
                         </button>
@@ -83,7 +84,7 @@
                         <span class="glyphicon glyphicon-remove"></span>
                     </button>
                     {% else %}
-                        <button id="btn-extraer-{{lote.idLote}}" type="button" class="btn btn-xs btn-lima btn-accion btn-extraccion" data-toggle="modal" data-target="#modal-extraer" data-toggle="tooltip" data-placement="top" data-original-title="Ver el lote extraido">Lote</button>&nbsp;&nbsp;
+                        <button id="btn-lote-{{lote.idLote}}" type="button" class="btn btn-xs btn-lima btn-accion btn-extraccion" data-toggle="modal" data-target="#modal-extraer" data-toggle="tooltip" data-placement="top" data-original-title="Ver el lote extraido">Lote</button>&nbsp;&nbsp;
                         <button type="button" class="btn btn-muyoscuro btn-xs btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Editar el lote" disabled="disabled" onclick="editarLote({{lote.idLote}})">
                             <span class="glyphicon glyphicon-edit"></span>
                         </button>

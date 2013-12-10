@@ -8,8 +8,7 @@ from django import forms
 from django.template import RequestContext, Template, Context
 from django.contrib.contenttypes.models import ContentType
 from .models import *
-from .forms import FormLote, GrupoAlzaFormSet, FormSocioEditar, FormSocio, FormMarcaSocio, MarcaFormSet, ApiarioSocioFormSet, FormRemito, RemitoDetalleFormSet
-from django.forms.models import inlineformset_factory
+from .forms import FormLote, GrupoAlzaFormSet, FormSocioEditar, FormSocio, FormMarcaSocio, MarcaFormSet
 from django.forms import Form
 
 # ================================= #
@@ -113,18 +112,12 @@ class EditarLoteView(UpdateView):
                                   grupoAlza_form=grupoAlza_form))
 @login_required
 def lotes(request):
-    lts = Lote.objects.all()
-    for l in lts:
-        l.pepe = "pepe"
-    # COMENTO ESTO PARA QUE TE CHILLE EL GIT 
-    # NO SE QUE ES...    
-    print lts[0].pepe
     lotes = Lote.objects.all()
     return render_to_response('trazabilidad/lotes.html',{'lotes':lotes},context_instance=RequestContext(request))
 
 @login_required
 def ingresarLote(request):
-    user = request.user
+    #user = request.user
     name = 'ingresar Lote'
     if request.POST:
         try:
@@ -150,7 +143,7 @@ def eliminarLote(request, id):
 def extraerLote(request):
     if request.is_ajax():
         id = request.GET.get('id')
-        peso = int(request.GET.get('peso'))
+        peso = float(request.GET.get('peso'))
         observacion = request.GET.get('observacion')
         user = request.user
         lote = Lote.objects.get(pk=id)
@@ -165,7 +158,7 @@ def extraerLote(request):
 def dextraerLote(request):
     if request.is_ajax():
         id = request.GET.get('id')
-        peso = int(request.GET.get('peso'))
+        peso = float(request.GET.get('peso'))
         observacion = request.GET.get('observacion')
         user = request.user
         lote = Lote.objects.get(pk=id)
@@ -348,8 +341,20 @@ def socios(request):
 @login_required
 def tambores(request):
     """ Gestion de tambores """
-    tambores = Tambor.objects.all()
-    return render_to_response('trazabilidad/tambores.html',{'tambores':tambores},context_instance=RequestContext(request))
+    if request.GET.get('id') != None:
+        print "entre al ajax"
+        id = request.GET.get('id')
+        lote = Lote.objects.get(pk=id)
+        estado = Extraido.objects.get(lote=lote)
+        buscar = True
+        busqueda = "Lote "+str(lote.pk)
+        tambores = Tambor.objects.filter(loteExtraido=estado)
+        print "antes del render"
+        return render_to_response('trazabilidad/tambores.html',{'buscar':buscar,'busqueda':busqueda,'tambores':tambores},context_instance=RequestContext(request))
+    else:
+        buscar = False
+        tambores = Tambor.objects.all()
+        return render_to_response('trazabilidad/tambores.html',{'buscar':buscar,'tambores':tambores},context_instance=RequestContext(request))
 
 
 #-------------------------------------------------------#

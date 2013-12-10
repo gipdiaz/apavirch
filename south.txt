@@ -11,5 +11,12 @@ python manage.py sqlclear myapp admin sites sessions auth contenttypes | python 
 ./manage.py migrate southtut
 
 == CONVERTIR UNA APP A SOUTH ==
+En la primera PC
 ./manage.py syncdb
 ./manage.py convert_to_south myapp
+
+En el resto de las PC
+./manage.py syncdb
+./manage.py convert_to_south myapp
+./manage.py migrate myapp 0001 --fake
+
