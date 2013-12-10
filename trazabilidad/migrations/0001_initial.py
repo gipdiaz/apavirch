@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import datetime
+from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
@@ -61,14 +61,14 @@ class Migration(SchemaMigration):
 
         # Adding model 'Socio'
         db.create_table(u'trazabilidad_socio', (
-            ('codigoUnicoIdentif', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
+            ('codigoUnicoIdentif', self.gf('django.db.models.fields.BigIntegerField')(primary_key=True)),
             ('tipoDocumento', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['trazabilidad.TipoDocumento'])),
             ('nroDocumento', self.gf('django.db.models.fields.IntegerField')()),
             ('nombreYApellido', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('direccion', self.gf('django.db.models.fields.CharField')(max_length=30)),
             ('telefono', self.gf('django.db.models.fields.IntegerField')(default=0)),
             ('email', self.gf('django.db.models.fields.EmailField')(max_length=75)),
-            ('fechaAlta', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 8, 0, 0))),
+            ('fechaAlta', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 10, 0, 0))),
             ('nroRenapa', self.gf('django.db.models.fields.CharField')(unique=True, max_length=200)),
             ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'])),
             ('object_id', self.gf('django.db.models.fields.PositiveIntegerField')()),
@@ -79,7 +79,7 @@ class Migration(SchemaMigration):
         db.create_table(u'trazabilidad_prueba', (
             ('idSocioEstado', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('descripcion', self.gf('django.db.models.fields.CharField')(max_length=200, blank=True)),
-            ('fecha', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 8, 0, 0))),
+            ('fecha', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 10, 0, 0))),
             ('socio', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['trazabilidad.Socio'], null=True)),
             ('periodoAPrueba', self.gf('django.db.models.fields.CharField')(max_length=100)),
         ))
@@ -89,7 +89,7 @@ class Migration(SchemaMigration):
         db.create_table(u'trazabilidad_activo', (
             ('idSocioEstado', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('descripcion', self.gf('django.db.models.fields.CharField')(max_length=200, blank=True)),
-            ('fecha', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 8, 0, 0))),
+            ('fecha', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 10, 0, 0))),
             ('socio', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['trazabilidad.Socio'], null=True)),
         ))
         db.send_create_signal(u'trazabilidad', ['Activo'])
@@ -98,7 +98,7 @@ class Migration(SchemaMigration):
         db.create_table(u'trazabilidad_inactivo', (
             ('idSocioEstado', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('descripcion', self.gf('django.db.models.fields.CharField')(max_length=200, blank=True)),
-            ('fecha', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 8, 0, 0))),
+            ('fecha', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 10, 0, 0))),
             ('socio', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['trazabilidad.Socio'], null=True)),
         ))
         db.send_create_signal(u'trazabilidad', ['Inactivo'])
@@ -108,7 +108,7 @@ class Migration(SchemaMigration):
             ('idSocioMarca', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('socio', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['trazabilidad.Socio'])),
             ('marca', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['trazabilidad.Marca'])),
-            ('fechaAlta', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 8, 0, 0))),
+            ('fechaAlta', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 10, 0, 0))),
             ('fechaValidez', self.gf('django.db.models.fields.DateTimeField')(blank=True)),
         ))
         db.send_create_signal(u'trazabilidad', ['SocioMarca'])
@@ -121,7 +121,7 @@ class Migration(SchemaMigration):
             ('nroChacra', self.gf('django.db.models.fields.CharField')(max_length=30, primary_key=True)),
             ('socio', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['trazabilidad.Socio'])),
             ('cantidadColmenas', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('fechaAlta', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 8, 0, 0))),
+            ('fechaAlta', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 10, 0, 0))),
             ('operario', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
         ))
         db.send_create_signal(u'trazabilidad', ['Apiario'])
@@ -154,7 +154,7 @@ class Migration(SchemaMigration):
             ('idLoteEstado', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('observacion', self.gf('django.db.models.fields.CharField')(max_length=200, blank=True)),
             ('peso', self.gf('django.db.models.fields.DecimalField')(max_digits=10, decimal_places=2)),
-            ('fecha', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 8, 0, 0))),
+            ('fecha', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 10, 0, 0))),
             ('operario', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
             ('lote', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['trazabilidad.Lote'], null=True)),
         ))
@@ -165,7 +165,7 @@ class Migration(SchemaMigration):
             ('idLoteEstado', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('observacion', self.gf('django.db.models.fields.CharField')(max_length=200, blank=True)),
             ('peso', self.gf('django.db.models.fields.DecimalField')(max_digits=10, decimal_places=2)),
-            ('fecha', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 8, 0, 0))),
+            ('fecha', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 10, 0, 0))),
             ('operario', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
             ('lote', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['trazabilidad.Lote'], null=True)),
         ))
@@ -176,7 +176,7 @@ class Migration(SchemaMigration):
             ('idLoteEstado', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('observacion', self.gf('django.db.models.fields.CharField')(max_length=200, blank=True)),
             ('peso', self.gf('django.db.models.fields.DecimalField')(max_digits=10, decimal_places=2)),
-            ('fecha', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 8, 0, 0))),
+            ('fecha', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 10, 0, 0))),
             ('operario', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
             ('lote', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['trazabilidad.Lote'], null=True)),
         ))
@@ -213,7 +213,7 @@ class Migration(SchemaMigration):
             ('marca', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['trazabilidad.Marca'])),
             ('operario', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
             ('cantidadEnvases', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('fecha', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 8, 0, 0))),
+            ('fecha', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 10, 0, 0))),
         ))
         db.send_create_signal(u'trazabilidad', ['Fraccionamiento'])
 
@@ -221,7 +221,7 @@ class Migration(SchemaMigration):
         db.create_table(u'trazabilidad_remito', (
             ('idRemito', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('operario', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('fecha', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 8, 0, 0))),
+            ('fecha', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime(2013, 12, 10, 0, 0))),
             ('observacion', self.gf('django.db.models.fields.CharField')(max_length=100)),
         ))
         db.send_create_signal(u'trazabilidad', ['Remito'])
@@ -356,14 +356,14 @@ class Migration(SchemaMigration):
         u'trazabilidad.activo': {
             'Meta': {'object_name': 'Activo'},
             'descripcion': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
-            'fecha': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 8, 0, 0)'}),
+            'fecha': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 10, 0, 0)'}),
             'idSocioEstado': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'socio': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['trazabilidad.Socio']", 'null': 'True'})
         },
         u'trazabilidad.apiario': {
             'Meta': {'object_name': 'Apiario'},
             'cantidadColmenas': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'fechaAlta': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 8, 0, 0)'}),
+            'fechaAlta': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 10, 0, 0)'}),
             'nroChacra': ('django.db.models.fields.CharField', [], {'max_length': '30', 'primary_key': 'True'}),
             'operario': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
             'socio': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['trazabilidad.Socio']"})
@@ -375,7 +375,7 @@ class Migration(SchemaMigration):
         },
         u'trazabilidad.devuelto': {
             'Meta': {'object_name': 'Devuelto'},
-            'fecha': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 8, 0, 0)'}),
+            'fecha': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 10, 0, 0)'}),
             'idLoteEstado': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'lote': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['trazabilidad.Lote']", 'null': 'True'}),
             'observacion': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
@@ -384,7 +384,7 @@ class Migration(SchemaMigration):
         },
         u'trazabilidad.extraido': {
             'Meta': {'object_name': 'Extraido'},
-            'fecha': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 8, 0, 0)'}),
+            'fecha': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 10, 0, 0)'}),
             'idLoteEstado': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'lote': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['trazabilidad.Lote']", 'null': 'True'}),
             'observacion': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
@@ -394,7 +394,7 @@ class Migration(SchemaMigration):
         u'trazabilidad.fraccionamiento': {
             'Meta': {'object_name': 'Fraccionamiento'},
             'cantidadEnvases': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'fecha': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 8, 0, 0)'}),
+            'fecha': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 10, 0, 0)'}),
             'idFraccionamiento': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'marca': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['trazabilidad.Marca']"}),
             'operario': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
@@ -412,13 +412,13 @@ class Migration(SchemaMigration):
         u'trazabilidad.inactivo': {
             'Meta': {'object_name': 'Inactivo'},
             'descripcion': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
-            'fecha': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 8, 0, 0)'}),
+            'fecha': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 10, 0, 0)'}),
             'idSocioEstado': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'socio': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['trazabilidad.Socio']", 'null': 'True'})
         },
         u'trazabilidad.ingresado': {
             'Meta': {'object_name': 'Ingresado'},
-            'fecha': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 8, 0, 0)'}),
+            'fecha': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 10, 0, 0)'}),
             'idLoteEstado': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'lote': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['trazabilidad.Lote']", 'null': 'True'}),
             'observacion': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
@@ -453,14 +453,14 @@ class Migration(SchemaMigration):
         u'trazabilidad.prueba': {
             'Meta': {'object_name': 'Prueba'},
             'descripcion': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
-            'fecha': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 8, 0, 0)'}),
+            'fecha': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 10, 0, 0)'}),
             'idSocioEstado': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'periodoAPrueba': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'socio': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['trazabilidad.Socio']", 'null': 'True'})
         },
         u'trazabilidad.remito': {
             'Meta': {'object_name': 'Remito'},
-            'fecha': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 8, 0, 0)'}),
+            'fecha': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 10, 0, 0)'}),
             'idRemito': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'observacion': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'operario': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"})
@@ -474,11 +474,11 @@ class Migration(SchemaMigration):
         },
         u'trazabilidad.socio': {
             'Meta': {'object_name': 'Socio'},
-            'codigoUnicoIdentif': ('django.db.models.fields.IntegerField', [], {'primary_key': 'True'}),
+            'codigoUnicoIdentif': ('django.db.models.fields.BigIntegerField', [], {'primary_key': 'True'}),
             'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
             'direccion': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
-            'fechaAlta': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 8, 0, 0)'}),
+            'fechaAlta': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 10, 0, 0)'}),
             'marcas': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['trazabilidad.Marca']", 'through': u"orm['trazabilidad.SocioMarca']", 'symmetrical': 'False'}),
             'nombreYApellido': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'nroDocumento': ('django.db.models.fields.IntegerField', [], {}),
@@ -489,7 +489,7 @@ class Migration(SchemaMigration):
         },
         u'trazabilidad.sociomarca': {
             'Meta': {'unique_together': "(('socio', 'marca'),)", 'object_name': 'SocioMarca'},
-            'fechaAlta': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 8, 0, 0)'}),
+            'fechaAlta': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime(2013, 12, 10, 0, 0)'}),
             'fechaValidez': ('django.db.models.fields.DateTimeField', [], {'blank': 'True'}),
             'idSocioMarca': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'marca': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['trazabilidad.Marca']"}),

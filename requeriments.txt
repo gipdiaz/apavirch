@@ -1,6 +1,10 @@
-django
-django-admin-bootstrapped
-django-registration
-django-registration -e git://github.com/yourcelf/django-registration-defaults.git#egg=django-registration-defaults
-django-models-utils
-south
+Django==1.5.3
+South==0.8.4
+argparse==1.2.1
+distribute==0.6.24
+django-admin-bootstrapped==1.6.2
+django-extensions==1.2.5
+django-eztables==0.3.2
+django.js==0.8.1
+six==1.4.1
+wsgiref==0.1.2

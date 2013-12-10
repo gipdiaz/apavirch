@@ -63,11 +63,11 @@ $(function () {
         $(".btn-estado").click( function() {
             if ($(this).text() == "Extraer") {
                 var btn = this;
-                bootbox.alert(divformpeso, function(result) {
+                bootbox.confirm(divformpeso, function(result) {
                     if (result) {
-                        var peso = parseInt($('#formpeso').find("input[name=peso]").val(), 10);
+                        var peso = parseFloat($('#formpeso').find("input[name=peso]").val(), 10).toFixed(2);
                         var observacion = $('#formpeso').find("input[name=observacion]").val();
-                        var pesolote = parseInt($(btn).closest('tr').find('td:eq(3)').text(), 10);
+                        var pesolote = parseFloat($(btn).closest('tr').find('td:eq(3)').text(), 10);
                         if ((peso > 0) && (peso < pesolote)) {
                             $.ajax({
                                 url: '/lotes/extraer-lote/',
@@ -80,7 +80,8 @@ $(function () {
                             .done(function(msj) {
                                 $(btn).removeClass('btn btn-warning btn-xs').addClass('btn btn-primary btn-xs');
                                 $(btn).text("Devolver");
-                                
+                                btn_lote = "#btn-lote-"+this.id;
+                                $(btn_lote).removeClass('hidden');
                                 label = "#lb-estado-"+this.id;
                                 $(label).removeClass('label label-success').addClass('label label-warning');
                                 $(label).text("Extraido");

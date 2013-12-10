@@ -26,6 +26,5 @@ urlpatterns = patterns('apavirch.trazabilidad.views',
     url(r'^socios/editar-socio/(?P<pk>\d+)/$', EditarSocioView.as_view()),
     url(r'^socios/activar-socio/$',activarSocio),
     url(r'^socios/desactivar-socio/$',desactivarSocio),
-    #url(r'^socios/marcas-socio/(?P<pk>\d+)/$', MarcasSocioView.as_view()),
     url(r'^socios/marcas-socio/(?P<id>\d+)/$', marcasSocio),
 )

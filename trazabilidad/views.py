@@ -113,16 +113,12 @@ class EditarLoteView(UpdateView):
                                   grupoAlza_form=grupoAlza_form))
 @login_required
 def lotes(request):
-    lts = Lote.objects.all()
-    for l in lts:
-        l.pepe = "pepe"
-    print lts[0].pepe
     lotes = Lote.objects.all()
     return render_to_response('trazabilidad/lotes.html',{'lotes':lotes},context_instance=RequestContext(request))
 
 @login_required
 def ingresarLote(request):
-    user = request.user
+    #user = request.user
     name = 'ingresar Lote'
     if request.POST:
         try:
@@ -148,7 +144,7 @@ def eliminarLote(request, id):
 def extraerLote(request):
     if request.is_ajax():
         id = request.GET.get('id')
-        peso = int(request.GET.get('peso'))
+        peso = float(request.GET.get('peso'))
         observacion = request.GET.get('observacion')
         user = request.user
         lote = Lote.objects.get(pk=id)
@@ -163,7 +159,7 @@ def extraerLote(request):
 def dextraerLote(request):
     if request.is_ajax():
         id = request.GET.get('id')
-        peso = int(request.GET.get('peso'))
+        peso = float(request.GET.get('peso'))
         observacion = request.GET.get('observacion')
         user = request.user
         lote = Lote.objects.get(pk=id)

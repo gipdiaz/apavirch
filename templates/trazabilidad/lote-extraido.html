@@ -13,9 +13,9 @@ Tambores del lote número <strong>{{ lote.idLote }}</strong> del socio <strong>{
           $('#dextraccion').removeClass('hidden');
         }
         function dextraccionLote (id, pl) {
-          var peso = parseInt($('#form-peso').find("input[name=peso]").val(), 10);
+          var peso = parseFloat($('#form-peso').find("input[name=peso]").val(), 10).toFixed(2);
           var observacion = $('#form-peso').find("input[name=observacion]").val();
-          var pesolote = parseInt(pesolote, 10);
+          //var pesolote = parseFloat(pesolote, 10).toFixed(2);
           if ((peso > 0) && (peso < pl)) {
               $.ajax({
                   url: '/lotes/dextraer-lote/',
@@ -26,8 +26,8 @@ Tambores del lote número <strong>{{ lote.idLote }}</strong> del socio <strong>{
                   //context : btn,
               })
               .done(function(msj) {
-                alert(msj);
-                  open("/lotes/","_self");
+                  alert(msj);
+                  open("/lotes/","_self"); 
               })
               .fail(function(msj) {
                   alert(msj);

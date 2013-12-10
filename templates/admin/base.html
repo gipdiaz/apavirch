@@ -11,7 +11,7 @@
 
     <!-- Le styles, placed after extrastyle to correctly override default styling -->
     <link href="{% static "bootstrap/css/bootstrap.min.css" %}" rel="stylesheet"/>
-    <link type="text/css" rel="stylesheet"  href="/static/css/navbar.css">
+    <link type="text/css" rel="stylesheet"  href="/static/css/navbar-admin.css">
     <style type="text/css">
       body {
         padding-top: 60px;
@@ -50,7 +50,7 @@
 
     {% if not is_popup %}
     <!-- Header -->
-    <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar navbar-fixed-top">
         <div class="navbar-inner">
             <div class="container">
                 <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -58,29 +58,45 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </a>
-                <a class="brand" href="/">APAVIRCH</a>
+                <a class="brand" href="/"><strong>APAVIRCH</strong></a>
                 {% block nav %}
                 <div class="nav-collapse collapse">
                     <ul class="nav">
-                        <li><a href="/"><i class="icon-home icon-white"></i> inicio</a></li>
-                        <li><a href="#"><i class="icon-list icon-white"></i> Reportes</a></li>
+                        <li><a href="/socios/">Socios</a></li>
+                        <li><a href="/lotes/">Lotes</a></li>
+                        <li><a href="/tambores/">Tambores</a></li>
+                        <li><a href="/tambores/">Remitos</a></li>
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-plus-sign icon-white"></i> ABM<b class="caret"></b></a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Reportes<b class="caret"></b></a>
                             <ul class="dropdown-menu">
-                                <li><a href="/admin/trazabilidad/alza/"><strong>Alzas</strong></a></li>
+                                <li class="divider"></li>
+                                <li class="dropdown-header">Reportes de socio </li>
+                                <li><a href="#"><strong>1</strong></a></li>
+                                <li><a href="#"><strong>2</strong></a></li>
+                                <li class="divider"></li>
+                                <li class="dropdown-header">Reportes de lote</li>
+                                <li><a href="#"><strong>1</strong></a></li>
+                                <li><a href="#"><strong>2</strong></a></li>
+                                <li class="divider"></li>
+                                <li class="dropdown-header">Reportes de tambor</li>
+                                <li><a href="#"><strong>1</strong></a></li>
+                                <li><a href="#"><strong>2</strong></a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Otros <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li class="divider"></li>
+                                <li class="dropdown-header">ABM </li>
                                 <li><a href="/admin/trazabilidad/apiario/"><strong>Apiarios</strong></a></li>
                                 <li><a href="/admin/trazabilidad/ciudad/"><strong>Ciudades</strong></a></li>
-                                <li><a href="/admin/trazabilidad/direccion/"><strong>Direcciones</strong></a></li>
-                                <li><a href="/admin/trazabilidad/envase/"><strong>Envases</strong></a></li>
-                                <li><a href="/admin/trazabilidad/extraccion/"><strong>Extracciones</strong></a></li>
-                                <li><a href="/admin/trazabilidad/fraccionamiento/"><strong>Fraccionamientos</strong></a></li>
                                 <li><a href="/admin/trazabilidad/inspeccion/"><strong>Inspecciones</strong></a></li>
-                                <li><a href="/admin/trazabilidad/lote/"><strong>Lotes</strong></a></li>
                                 <li><a href="/admin/trazabilidad/marca/"><strong>Marcas</strong></a></li>
-                                <li><a href="/admin/trazabilidad/persona/"><strong>Personas</strong></a></li>
-                                <li><a href="/admin/trazabilidad/remito/"><strong>Remitos</strong></a></li>
-                                <li><a href="/admin/trazabilidad/socio/"><strong>Socios</strong></a></li>
-                                <li><a href="/admin/trazabilidad/tambor/"><strong>Tambores</strong></a></li>
+                                <li class="divider"></li>
+                                <li class="dropdown-header">ABM de tipos</li>
+                                <li><a href="/admin/trazabilidad/tipoalza/"><strong>Tipo de Alza</strong></a></li>
+                                <li><a href="/admin/trazabilidad/tipodocumento/"><strong>Tipo de Documento</strong></a></li>
+                                <li><a href="/admin/trazabilidad/tipomarca/"><strong>Tipo de Marca</strong></a></li>
                             </ul>
                         </li>
                     </ul>
@@ -96,7 +112,7 @@
                                 </ul>
                             </li>
                         {% endif %}
-                        <li><a href="/"><i class="icon-wrench icon-white"></i> Salir Admin</a></li>
+                        <li><a href="/">Salir Admin</a></li>
                     </ul>
                 </div><!-- /.nav-collapse -->
                 {% endblock %}

@@ -45,6 +45,8 @@ $(function () {
             "oLanguage": {
                 "sUrl": "/static/js/libs/datatables/language.es.json",
             },
+            "oSearch": {"sSearch": "Initial search"},
+            
         });
         
         //-- Manejador de los botones de estado --//

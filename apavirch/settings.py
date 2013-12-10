@@ -11,17 +11,7 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'apavirch.db',                      # Or path to database file if using sqlite3.
-        # The following settings are not used with sqlite3:
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
-    }
-}
+from local_settings import *
 
 CAPACIDAD_TAMBOR = 100
 
@@ -123,7 +113,7 @@ TEMPLATE_DIRS = (
 
 INSTALLED_APPS = (
     'django_extensions',
-    #'django_admin_bootstrapped.bootstrap3',
+    'django_admin_bootstrapped.bootstrap3',
     'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.admindocs',
