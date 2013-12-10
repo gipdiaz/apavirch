@@ -7,6 +7,37 @@ Tambores del lote número <strong>{{ lote.idLote }}</strong> del socio <strong>{
         function gstTambor () {
             open("/tambores/","_self");
         }
+        function dextraccionprevLote() {
+          $('#form-peso').removeClass("hidden");
+          $('#dextraccionprev').addClass("hidden");
+          $('#dextraccion').removeClass('hidden');
+        }
+        function dextraccionLote (id, pl) {
+          var peso = parseInt($('#form-peso').find("input[name=peso]").val(), 10);
+          var observacion = $('#form-peso').find("input[name=observacion]").val();
+          var pesolote = parseInt(pesolote, 10);
+          if ((peso > 0) && (peso < pl)) {
+              $.ajax({
+                  url: '/lotes/dextraer-lote/',
+                  type: 'GET',
+                  data:   {id: id,
+                          peso: peso,
+                          observacion: observacion},
+                  //context : btn,
+              })
+              .done(function(msj) {
+                alert(msj);
+                  open("/lotes/","_self");
+              })
+              .fail(function(msj) {
+                  alert(msj);
+              })  
+              //alert("Funco")
+          }
+          else{
+              alert("El peso extraido debe ser mayor que cero y menor que el peso del lote");
+          };
+        }
         
     </script>
 
@@ -37,8 +68,23 @@ Tambores del lote número <strong>{{ lote.idLote }}</strong> del socio <strong>{
               {% endfor %}
             </tbody> 
         </table>
+        <form id="form-peso" action="" method="POST" role="form" class="hidden">
+          <legend></legend>
+          <div class="form-group">
+            <label for="">Peso</label>
+            <input type="text" class="form-control" id="peso" name="peso" placeholder="Ingrese el nuevo peso">
+          </div>
+          <div class="form-group">
+            <label for="">Observacion</label>
+            <input type="text" class="form-control" id="peso" name="peso" placeholder="Ingrese una observacion">
+          </div>
+
+          {# <button type="submit" class="btn btn-primary">Guardar</button> #}
+        </form>
 {% endblock %}
 {% block modalfooter %}
+    <button type="button" id="dextraccion" class="hidden btn btn-warning" onclick="dextraccionLote({{lote.idLote}},{{lote.peso}})">Guardar</button>
+    <button type="button" id="dextraccionprev" class="btn btn-warning" onclick="dextraccionprevLote()">Editar extracción</button>
     <button type="button" class="btn btn-lima" onclick="gstTambor()">Gestión de Tambores</button>
     <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
 {% endblock %}

@@ -30,22 +30,10 @@ $(function () {
         })
     }
 
-    var divformpeso =   '<div class="text-center">'
-                            +'<h3>Datos de la extracción</h3>'
-                            +'<form id="formpeso" class="text-left" role="form">'
-                                +'<br>'
-                                +'<div class="row">'
-                                    +'<div class="form-group col-md-6">'
-                                        +'<label for="peso">Ingrese el peso del lote extraido</label>'
-                                        +'<input type="text" class="form-control" name="peso" id="peso">'
-                                    +'</div>'
-                                +'</div>'
-                                +'<div class="row">'
-                                    +'<div class="form-group col-md-6">'
-                                        +'<label for="observacion">Ingrese una observación de la extracción</label>'
-                                        +'<input type="text" class="form-control" name="observacion" id="observacion">'
-                                    +'</div>'
-                                +'</div>'
+    var divformpeso =   '<div class="center">'
+                            +'<form id="formpeso" action="">'
+                                +'<h4>Ingrese el peso extraido del lote</h4>'
+                                +'<input type="text" name="peso"></input><br/>'
                             +'</form>';
                         +'</div>';
 
@@ -63,18 +51,15 @@ $(function () {
         $(".btn-estado").click( function() {
             if ($(this).text() == "Extraer") {
                 var btn = this;
-                bootbox.alert(divformpeso, function(result) {
+                bootbox.confirm(divformpeso, function(result) {
                     if (result) {
                         var peso = parseInt($('#formpeso').find("input[name=peso]").val(), 10);
-                        var observacion = $('#formpeso').find("input[name=observacion]").val();
                         var pesolote = parseInt($(btn).closest('tr').find('td:eq(3)').text(), 10);
                         if ((peso > 0) && (peso < pesolote)) {
                             $.ajax({
                                 url: '/lotes/extraer-lote/',
                                 type: 'GET',
-                                data:   {id: btn.id,
-                                        peso: peso,
-                                        observacion: observacion},
+                                data: {id: btn.id,peso: peso},
                                 context : btn,
                             })
                             .done(function(msj) {
@@ -119,6 +104,6 @@ $(function () {
         $(".btn-extraccion").click( function() {
             var idLote = $(this).closest('tr').find('td:eq(0)').text();
             $("#modal-extraer").load("/lotes/lote-extraido/"+idLote);
-        });
+        }); 
     }); 
 });

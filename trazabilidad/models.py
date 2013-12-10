@@ -267,9 +267,8 @@ class Lote(models.Model):
     class Meta:
         verbose_name_plural = "Lotes"
 
-    def extraer(self, user, peso):
-        #import pdb; pdb.set_trace()
-        estado = Extraido(observacion='Extraido', peso=peso, operario=user)
+    def extraer(self, user, peso, observacion=""):
+        estado = Extraido(observacion=observacion, peso=peso, operario=user)
         estado.save()
 
         while peso > settings.CAPACIDAD_TAMBOR:
@@ -294,6 +293,27 @@ class Lote(models.Model):
         self.object_id = estado.pk
         self.save()
         estado.lote = self
+        estado.save()
+
+    def extraerDeNuevo(self, user, peso, observacion=""):
+        #estado = Extraido(observacion=observacion, peso=peso, operario=user)
+        #estado.save()
+
+        import pdb; pdb.set_trace()
+
+        estado = Extraido.objects.get(pk=self.object_id)
+
+        Tambor.objects.filter(loteExtraido=estado).delete()
+
+        while peso > settings.CAPACIDAD_TAMBOR:
+            tambor = Tambor (loteExtraido = estado, peso = settings.CAPACIDAD_TAMBOR, operario = user)
+            tambor.save()
+            peso = peso - settings.CAPACIDAD_TAMBOR
+        if peso!= 0:
+            tambor = Tambor (loteExtraido = estado, peso = peso, operario = user)
+            tambor.save()
+
+        estado.peso = peso
         estado.save()
 
     def fueExtraido(self):

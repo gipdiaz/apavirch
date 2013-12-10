@@ -148,14 +148,28 @@ def eliminarLote(request, id):
 @login_required
 def extraerLote(request):
     if request.is_ajax():
-        print "entre al ajax"
         id = request.GET.get('id')
         peso = int(request.GET.get('peso'))
+        observacion = request.GET.get('observacion')
         user = request.user
         lote = Lote.objects.get(pk=id)
         if lote.estadoActual.__class__.__name__ == "Ingresado":
-            print "antes de extraer"
-            lote.extraer(user, peso)
+            lote.extraer(user, peso, observacion)
+            return HttpResponse("Lote Extraido")
+        return HttpResponse("El lote no se puede extraer")
+    else:
+        return HttpResponse('No es una peticion Ajax')
+
+@login_required
+def dextraerLote(request):
+    if request.is_ajax():
+        id = request.GET.get('id')
+        peso = int(request.GET.get('peso'))
+        observacion = request.GET.get('observacion')
+        user = request.user
+        lote = Lote.objects.get(pk=id)
+        if (lote.estadoActual.__class__.__name__ == "Extraido") or (lote.estadoActual.__class__.__name__ == "Devuelto"):
+            lote.extraerDeNuevo(user, peso, observacion)
             return HttpResponse("Lote Extraido")
         return HttpResponse("El lote no se puede extraer")
     else:
@@ -178,7 +192,8 @@ def devolverLote(request):
 
 def loteExtraido(request, id):
     lote = Lote.objects.get(pk=id)
-    tambores = Tambor.objects.filter(loteExtraido=lote)
+    estado = Extraido.objects.get(lote=lote)
+    tambores = Tambor.objects.filter(loteExtraido=estado)
     return render_to_response('trazabilidad/lote-extraido.html',{'lote':lote, 'tambores':tambores}, context_instance=RequestContext(request))
 
 # ================================= #
