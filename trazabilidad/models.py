@@ -410,6 +410,7 @@ class Fraccionamiento (models.Model):
 class Remito (models.Model):
     idRemito = models.AutoField (primary_key = True, )            
     operario = models.ForeignKey(User, null = False)
+    socio = models.ForeignKey(Socio, null = False)
     fecha = models.DateTimeField (default = timezone.now())
     observacion = models.CharField (max_length = 100)
     

@@ -1,0 +1,64 @@
+{% extends "trazabilidad/base.html" %}
+
+{% block head %}
+	<title>Gestión de Remitos</title>
+
+    {% load eztables %}
+
+    <!-- STYLES -->
+
+    {% datatables_bootstrap_css %}
+    
+    <!-- JAVASCRIPTS -->
+
+    {% datatables_js %}
+    {% datatables_bootstrap_js %}
+    <script type="text/javascript" src="/static/js/remitos.js"></script>
+
+{% endblock %}
+  
+{% block body %}
+    <div class="row center">
+        <div class="col-sm-12">
+            <h1> Gestión de Remitos </h1>
+        </div>
+    </div>
+    <div class ="row">
+        <div class="btn-group">
+            <button type="button" class="btn btn-sm btn-warning" onclick="ingresarSocio()">Ingresar Remito</button>
+            <button type="button" class="btn btn-sm btn-warning">Listar Remitos</button>
+            <button type="button" class="btn btn-sm btn-warning">Accion</button>
+        </div>
+    </div>
+    <div class="row top-margin">
+        <table  id="tabla-remitos" class="table table-bordered table-condensed table-striped table-hover">
+           <thead>
+                <tr>
+                    <th>id Remito</th>
+                    <th>socio</th>
+                    <th>fecha</th>
+                    <th>Observacion</th>                    
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for remito in remitos %}
+			 <tr>
+                  <td name="idRemito">{{ remito.idRemito }}</td>
+                  <td>{{ remito.socio.nombreYApellido }}</td>
+	              <td>{{ remito.fecha }}</td>
+	              <td>{{ remito.observacion }}</td>
+                  <td class="center">                
+                        <button id="btn_editar_{{ remito.idRemito }}" type="button" class="btn btn-info btn-xs" 
+                            onclick="editarSocio({{ remito.idRemito }})">Editar</button>
+                        <button id="btn_editar_{{ remito.idRemito }}" type="button" class="btn btn-danger btn-xs"
+                            onclick="eliminarSocio({{ remito.idRemito }})">Eliminar</button>              
+                  </td>                
+              </tr>
+            {% endfor %}
+            </tbody> 
+        </table>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"></div>
+{% endblock %}

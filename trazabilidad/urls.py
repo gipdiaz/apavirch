@@ -27,4 +27,12 @@ urlpatterns = patterns('apavirch.trazabilidad.views',
     url(r'^socios/activar-socio/$',activarSocio),
     url(r'^socios/desactivar-socio/$',desactivarSocio),
     url(r'^socios/marcas-socio/(?P<id>\d+)/$', marcasSocio),
+    url(r'^socios/apiarios-socio/(?P<id>\d+)/$', apiariosSocio),
+
+    #-- Remitos --#
+    url(r'^remitos/$', remitos),
+    url(r'^remitos/ingresar-lote/$',CrearLoteView.as_view()),
+    url(r'^remitos/editar-lote/(?P<pk>\d+)/$',EditarLoteView.as_view()),
+    url(r'^remitos/eliminar-lote/(?P<id>\d+)/$',eliminarLote),
+    
 )
