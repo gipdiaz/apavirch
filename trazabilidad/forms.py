@@ -40,38 +40,29 @@ class FormSocio(ModelForm):
         fields = ('codigoUnicoIdentif' ,'tipoDocumento', 'nroDocumento','nombreYApellido','direccion','telefono','email', 'nroRenapa')
         model = Socio
     
-
 class FormSocioEditar(ModelForm):
     class Meta:
         fields = ('codigoUnicoIdentif' ,'tipoDocumento', 'nroDocumento','nombreYApellido','direccion','telefono','email', 'nroRenapa')
         model = Socio
 
-
-class FormMarcasSocioCheck(Form):
-    checkSocioMarca = forms.BooleanField()
-    socio = forms.CharField(max_length="200")
-    marca = forms.IntegerField()
-
-
-
-class FormTEST(ModelForm):
+'''
+class FormMarcaSocio(ModelForm):
     checkSocioMarca = forms.BooleanField(required=False)
-
     class Meta:
         model = Marca
         fields=('idMarca', 'descripcion', 'tipoMarca', 'checkSocioMarca')
+MarcaFormSet = modelformset_factory(Marca, form=FormMarcaSocio, extra = 0)
+'''
 
+#=======================
+class FormMarcaSocio(Form):
+    checkSocioMarca = forms.BooleanField(required=False)
+    idMarca = forms.IntegerField(required= False)
+    descripcion = forms.CharField (max_length =20, required= False)
+    tipoMarca = forms.CharField (max_length =20, required= False)
 
-MarcaFormSet = modelformset_factory(Marca, form=FormTEST, extra = 0)
+MarcaFormSet = formset_factory(FormMarcaSocio, extra = 0)
 
-
-class FormMarcasSocio(ModelForm):
-    #fechaPrueba = forms.DateTimeField()
-    #tipoMarca = forms.CharField(max_length=50)
-    class Meta:
-        #fields = ('descripcion')
-        model = Marca
-        
 
 
 

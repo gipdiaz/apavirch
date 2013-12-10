@@ -31,10 +31,12 @@ $(function(){
   {% csrf_token %}
   {{ form.management_form }}
   {{ form.non_form_errors }}
+
   <div class="row top-margin">        
         <table  id="tabla-marcas" class="table table-condensed table-hover">
            <thead>
                 <tr>
+                    <th>#</th>
                     <th>Marca</th>
                     <th>Tipo de Marca</th>                                      
                     <th>Asociada</th>
@@ -42,9 +44,13 @@ $(function(){
             </thead>
             <tbody>
             {% for marcaset in form.forms %}  
-                <tr>
-                    <td>{{marcaset.instance.descripcion}}</th>                                      
-                    <td>{{marcaset.instance.tipoMarca}}</td>
+                <tr>                                        
+                    <td class="hidden">{{marcaset.idMarca}}</td>
+                    <td>{{marcaset.idMarca.value}}</td> 
+                    <td class="hidden">{{marcaset.descripcion}}</td>      
+                    <td >{{marcaset.descripcion.value}}</td>      
+                    <td class="hidden">{{marcaset.tipoMarca}}</td>
+                    <td>{{marcaset.tipoMarca.value}}</td>
                     <td>{{marcaset.checkSocioMarca}}</td>
                 </tr>                                        
               {%endfor%}

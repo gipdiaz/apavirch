@@ -7,14 +7,6 @@ urlpatterns = patterns('apavirch.trazabilidad.views',
     #-- Index --#
     url(r'^$',index),
 
-    #-- Socios --""
-    url(r'^socios/$',socios),
-    url(r'^socios/ingresar-socio/$',CrearSocioView.as_view()),
-    url(r'^socios/editar-socio/(?P<pk>\d+)/$', EditarSocioView.as_view()),
-    url(r'^socios/activar-socio/$',activarSocio),
-    url(r'^socios/desactivar-socio/$',desactivarSocio),
-    url(r'^socios/marcas-socio/(?P<id>\d+)/$', marcasSocio),
-
     #-- Lotes --#
     url(r'^lotes/$',lotes),
     url(r'^lotes/ingresar-lote/$',CrearLoteView.as_view()),
@@ -28,5 +20,12 @@ urlpatterns = patterns('apavirch.trazabilidad.views',
     #-- Tambores --#
     url(r'^tambores/$',tambores),
 
-
+    #-- Socios --""
+    url(r'^socios/$',socios),
+    url(r'^socios/ingresar-socio/$',CrearSocioView.as_view()),
+    url(r'^socios/editar-socio/(?P<pk>\d+)/$', EditarSocioView.as_view()),
+    url(r'^socios/activar-socio/$',activarSocio),
+    url(r'^socios/desactivar-socio/$',desactivarSocio),
+    #url(r'^socios/marcas-socio/(?P<pk>\d+)/$', MarcasSocioView.as_view()),
+    url(r'^socios/marcas-socio/(?P<id>\d+)/$', marcasSocio),
 )
