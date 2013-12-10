@@ -5,7 +5,8 @@ from django.forms import ModelForm, Form
 from django.forms.models import inlineformset_factory, formset_factory, modelformset_factory
 from django.core.exceptions import ValidationError
 
-
+#-------------------------------------------------------#
+#--   Forms de Lote  --#
 class FormLote(ModelForm):
     class Meta:
 	    fields = ('apiario','peso','observacion')
@@ -34,28 +35,25 @@ class GrupoAlzaRequiredFormSet(forms.models.BaseInlineFormSet):
 GrupoAlzaFormSet = inlineformset_factory(Lote, GrupoAlza,form=GAForm,formset=GrupoAlzaRequiredFormSet, extra=1, max_num=3, fields=("idGrupoAlza","tipoAlza","lote","cantidadAlzas","peso"))
 
 
+#-------------------------------------------------------#
+#--  Forms de Socio  --#
+
 class FormSocio(ModelForm):
+    #--  form para editar/ingresar socios cuyo estado es a prueba --#
     Prueba = forms.CharField(max_length= 100)
     class Meta:
         fields = ('codigoUnicoIdentif' ,'tipoDocumento', 'nroDocumento','nombreYApellido','direccion','telefono','email', 'nroRenapa')
         model = Socio
     
 class FormSocioEditar(ModelForm):
+    #--  form para editar socios cuyo estado no es a prueba  --#
     class Meta:
         fields = ('codigoUnicoIdentif' ,'tipoDocumento', 'nroDocumento','nombreYApellido','direccion','telefono','email', 'nroRenapa')
         model = Socio
 
-'''
-class FormMarcaSocio(ModelForm):
-    checkSocioMarca = forms.BooleanField(required=False)
-    class Meta:
-        model = Marca
-        fields=('idMarca', 'descripcion', 'tipoMarca', 'checkSocioMarca')
-MarcaFormSet = modelformset_factory(Marca, form=FormMarcaSocio, extra = 0)
-'''
 
-#=======================
 class FormMarcaSocio(Form):
+    #--  form para gestionar las marcas del socio --#
     checkSocioMarca = forms.BooleanField(required=False)
     idMarca = forms.IntegerField(required= False)
     descripcion = forms.CharField (max_length =20, required= False)
@@ -70,6 +68,39 @@ class FormApiarioSocio(Form):
         model = Apiario
 
 ApiarioSocioFormSet = modelformset_factory(Apiario, extra = 1)
+
+
+
+#-------------------------------------------------------#
+#--   Forms de Remito  --#
+
+class FormRemito(ModelForm):
+    #--  form para editar/ingresar remitos--#
+    class Meta:
+        fields = ('apiario','peso','observacion')
+        model = Lote
+
+class GAForm(ModelForm):
+    class Meta:
+        model = GrupoAlza
+
+class GrupoAlzaRequiredFormSet(forms.models.BaseInlineFormSet):
+
+    def clean(self):
+
+        super(GrupoAlzaRequiredFormSet, self).clean()
+
+        count = 0
+        for form in self.forms:
+            try:
+                if form.cleaned_data:
+                    count += 1
+            except AttributeError:
+                pass
+        if count < 1:
+            raise forms.ValidationError('Se necesita al menos un Grupo de Alza')
+
+GrupoAlzaFormSet = inlineformset_factory(Lote, GrupoAlza,form=GAForm,formset=GrupoAlzaRequiredFormSet, extra=1, max_num=3, fields=("idGrupoAlza","tipoAlza","lote","cantidadAlzas","peso"))
 
 
 

@@ -2,19 +2,8 @@
 {% block head %}
     <title>Editar Lote</title>
     <script src="{{ STATIC_URL }}js/jquery-2.0.3.min.js"></script>
-    <script src="{{ STATIC_URL }}js/jquery.formset.js"></script>
+    <script type="text/javascript" src="/static/js/gst-lotes.js"></script>
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/lotes.css">
-    <script type="text/javascript">
-        $(function() {
-            $('#grupo-alza tbody tr').formset({
-                   prefix: '{{ grupoAlza_form.prefix }}',
-                   addCssClass:'btn btn-success btn-xs',
-                   deleteCssClass: 'btn btn-danger btn-xs',
-                   addText: 'Agregar Grupo de Alza',
-                   deleteText: 'Eliminar',
-               });
-        })
-    </script>
 {% endblock %}
 
 {% block body %}
@@ -29,6 +18,7 @@
                 <legend>Lote</legend>
                 {% csrf_token %}
                 {% for f in form %}
+                {% if f.label != "Peso" %}
                     {% if f.errors %}
                         <div class="form-group alert alert-danger">
                             <label class="col-md-2 control-label" for="input{{f.label}}">{{f.label}}</label>
@@ -47,6 +37,7 @@
                             </div>
                         </div>
                     {% endif %}
+                {% endif %}
                 {% endfor %}
                 {{ form.management_form }}
                 {{ form.non_form_errors }}
@@ -64,7 +55,7 @@
                     </thead>
                    <tbody>
                        {% for form in grupoAlza_form.forms %}               
-                       <tr>
+                       <tr class="item">
                           <td>{{ form.tipoAlza.errors }}{{ form.tipoAlza }} {{form.idGrupoAlza}} {{form.DELETE}}</td>
                           <td>{{ form.peso.errors }}{{ form.peso }}</td>
                           <td>{{ form.cantidadAlzas.errors }}{{ form.cantidadAlzas }}</td>

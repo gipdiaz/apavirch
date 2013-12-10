@@ -1,7 +1,7 @@
 {% extends "trazabilidad/base.html" %}
 
 {% block head %}
-	<title>Gestión de Lotes</title>
+	<title>Gestión de Tambores</title>
 
     {% load eztables %}
 
@@ -13,15 +13,15 @@
 
     {% datatables_js %}
     {% datatables_bootstrap_js %}
-    <script type="text/javascript" src="/static/js/lotes.js"></script>
-    <link rel="stylesheet" type="text/css" href="/static/css/lotes.css">
+    <script type="text/javascript" src="/static/js/tambores.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/tambores.css">
 
 {% endblock %}
   
 {% block body %}
     <div class="row center">
         <div class="col-sm-12">
-            <h1 style="margin:0px 0px 0px 0px;"> Gestión de Lotes </h1>
+            <h1 style="margin:0px 0px 0px 0px;"> Gestión de Tambores </h1>
         </div>
     </div>
     <div class ="row">
@@ -35,24 +35,24 @@
         <table  id="tabla-lotes" class="table table-bordered table-condensed table-striped table-hover">
             <thead>
                 <tr>
-                    <th>Id Lote</th>
-                    <th>Apiario</th>
-                    <th>Socio</th>
+                    <th>Id Tambor</th>
+                    <th>Lote Extraido</th>
                     <th>Peso</th>
-                    <th>Observación</th>
+                    <th>Fraccionado</th>
+                    <th>Operario</th>
                     <th class="text-center">Estado Actual</th>
                     <th class="text-center">Cambiar de Estado</th>
                     <th class="text-center">Acciones</th>
                 </tr>
             </thead>
             <tbody>
-            {% for lote in lotes %}
-            <tr id="tr-{{lote.idLote}}">
-                <td name="idLote">{{lote.idLote}}</td>
-                <td>{{ lote.apiario }}</td>
-                <td>{{ lote.apiario.socio }}</td>
-                <td>{{ lote.peso }}</td>
-                <td>{{ lote.observacion }}</td>
+            {% for tambor in tambores %}
+            <tr id="tr-{{tambor.idTambor}}">
+                <td name="idLote">{{tambor.idTambor}}</td>
+                <td>{{ tambor.loteExtraido }}</td>
+                <td>{{ tambor.peso }}</td>
+                <td>{{ tambor.fraccionado }}</td>
+                <td>{{ tambor.operario }}</td>
                 <td class="center">
                     {% if lote.estadoActual|stringformat:"s" == "Ingresado" %}
                         <p class="etiqueta"><span id="lb-estado-{{lote.idLote}}" class="label label-success">{{ lote.estadoActual }}</span></p>
@@ -69,12 +69,20 @@
                         <button type="button" id="{{lote.idLote}}" class="btn btn-warning btn-xs btn-estado">Extraer</button>
                     {% endif %}
                     {% if lote.estadoActual|stringformat:"s" == "Devuelto" %}
+                        <!--<button type="button" id="{{lote.idLote}}" class="btn btn-danger btn-xs btn-estado" disabled="disabled"><span class="glyphicon glyphicon-ban-circle"></span></button>-->
                     {% endif %}
                     {% if lote.estadoActual|stringformat:"s" == "Extraido" %}
                         <button type="button" id="{{lote.idLote}}" class="btn btn-primary btn-xs btn-estado">Devolver</button>
+                        <button type="button" class="btn btn-muyoscuro btn-xs btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Deshacer la extracción">
+                            <span class="glyphicon glyphicon-minus-sign"></span>
+                        </button>
+                        <button type="button" class="btn btn-muyoscuro btn-xs btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Editar el lote" disabled="disabled" onclick="editarLote({{lote.idLote}})">
+                            <span class="glyphicon glyphicon-edit"></span>
+                        </button>
                     {% endif %}
                 </td>
                 <td class="center">
+                    
                     {% if lote.estadoActual|stringformat:"s" == "Ingresado" %}
                         <button type="button" class="btn btn-muyoscuro btn-xs btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Editar el Lote" onclick="editarLote({{lote.idLote}})">
                             <span class="glyphicon glyphicon-edit"></span>
