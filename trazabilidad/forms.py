@@ -77,18 +77,18 @@ ApiarioSocioFormSet = modelformset_factory(Apiario, extra = 1)
 class FormRemito(ModelForm):
     #--  form para editar/ingresar remitos--#
     class Meta:
-        fields = ('apiario','peso','observacion')
-        model = Lote
+        fields = ('socio','observacion')
+        model = Remito
 
-class GAForm(ModelForm):
+class RemitoDetalleForm(ModelForm):
     class Meta:
-        model = GrupoAlza
+        model = RemitoDetalle
 
-class GrupoAlzaRequiredFormSet(forms.models.BaseInlineFormSet):
+class RemitoDetalleRequiredFormSet(forms.models.BaseInlineFormSet):
 
     def clean(self):
 
-        super(GrupoAlzaRequiredFormSet, self).clean()
+        super(RemitoDetalleRequiredFormSet, self).clean()
 
         count = 0
         for form in self.forms:
@@ -98,9 +98,8 @@ class GrupoAlzaRequiredFormSet(forms.models.BaseInlineFormSet):
             except AttributeError:
                 pass
         if count < 1:
-            raise forms.ValidationError('Se necesita al menos un Grupo de Alza')
+            raise forms.ValidationError('Se necesita al menos detalle')
 
-GrupoAlzaFormSet = inlineformset_factory(Lote, GrupoAlza,form=GAForm,formset=GrupoAlzaRequiredFormSet, extra=1, max_num=3, fields=("idGrupoAlza","tipoAlza","lote","cantidadAlzas","peso"))
-
+RemitoDetalleFormSet = inlineformset_factory(Remito, RemitoDetalle, form=RemitoDetalleForm, formset=RemitoDetalleRequiredFormSet, extra=1, fields=("idRemitoDetalle","remito","tambor","fraccionamiento",))
 
 

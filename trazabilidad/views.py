@@ -197,9 +197,13 @@ def loteExtraido(request, id):
     tambores = Tambor.objects.filter(loteExtraido=estado)
     return render_to_response('trazabilidad/lote-extraido.html',{'lote':lote, 'tambores':tambores}, context_instance=RequestContext(request))
 
-# ================================= #
+
+#-------------------------------------------------------#
+#-----------   Socios   --------------------------------#
+
 
 class CrearSocioView(CreateView):
+    #--  clase para dar altas de socios  --#
     template_name = 'trazabilidad/ingresar-socio.html'
     model = Socio
     form_class = FormSocio
@@ -237,8 +241,9 @@ class CrearSocioView(CreateView):
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(form=form))
 
-#---------------------------------
+
 class EditarSocioView(CreateView):
+    #-- clase para editar el socio  --#
     template_name = 'trazabilidad/editar-socio.html'
     model = Socio
     form_class = FormSocio
@@ -281,6 +286,7 @@ class EditarSocioView(CreateView):
  
 @login_required
 def probarSocio(request):
+    #-- funcion para cambiar el estado del socio a 'A PRUEBA'  --#
     if request.is_ajax():
         print "entre al ajax"
         id = request.GET.get('id')
@@ -297,6 +303,7 @@ def probarSocio(request):
 
 @login_required
 def activarSocio(request):
+    #--  funcion para cambiar el estado del socio a 'ACTIVO'  --#
     if request.is_ajax():
         print "entre al ajax"
         id = request.GET.get('id')
@@ -313,6 +320,7 @@ def activarSocio(request):
 
 @login_required
 def desactivarSocio(request):
+    #-- funcion para cambiar el estado del socio a 'INACTIVO' --#
     if request.is_ajax():
         id = request.GET.get('id')
         user = request.user
@@ -327,11 +335,15 @@ def desactivarSocio(request):
 
 @login_required
 def socios(request):
+    #--  funcion que retorna todos los socios  --#
     """ Gestion de socios """
     socios = Socio.objects.all()
     return render_to_response('trazabilidad/socios.html',{'socios':socios},context_instance=RequestContext(request))
 
-# ================================= #
+
+#-------------------------------------------------------#
+#-----------   Tambores   ------------------------------#
+
 
 @login_required
 def tambores(request):
@@ -340,13 +352,14 @@ def tambores(request):
     return render_to_response('trazabilidad/tambores.html',{'tambores':tambores},context_instance=RequestContext(request))
 
 
-#====================================
-#====================================
+#-------------------------------------------------------#
+#-----------   Marcas   --------------------------------#
+
 
 @login_required
 def marcasSocio(request, id):
+    #-- funcion para asignar marcas a socios --#
     socio = Socio.objects.get(pk=id)
-    
     if request.POST:        
         formset = MarcaFormSet(request.POST)
         for form in formset:             
@@ -368,13 +381,10 @@ def marcasSocio(request, id):
                         print marca.idMarca  
                         SocioMarca.objects.get(socio=socio, marca=marca).delete()
                         print 'borrl'   
-
         return HttpResponseRedirect('/socios/')
-
     else:
         condicion = 'SELECT CASE WHEN idMarca=marca_id THEN "True" ELSE "False" END FROM trazabilidad_sociomarca where idMarca=marca_id and socio_id = '+str(socio.codigoUnicoIdentif)
         marcasSocio = Marca.objects.extra(select={'checkSocioMarca': condicion})
-
         initial_data = []        
         for marca in marcasSocio:            
             aux = {}
@@ -392,12 +402,12 @@ def marcasSocio(request, id):
             {'form':form, 'socio':socio},
             context_instance=RequestContext(request))
 
-# ================================= #
-
-#====================================
+#-------------------------------------------------------#
+#-----------   Apiarios   ------------------------------#
 
 @login_required
 def apiariosSocio(request, id):
+    #-- funcion para dar de alta apiarios al socio  --#
     socio = Socio.objects.get(pk=id)
     
     if request.POST:        
@@ -421,9 +431,7 @@ def apiariosSocio(request, id):
                         print marca.idMarca  
                         SocioMarca.objects.get(socio=socio, marca=marca).delete()
                         print 'borrl'   
-
         return HttpResponseRedirect('/socios/')
-
     else:
         condicion = 'SELECT CASE WHEN idMarca=marca_id THEN "True" ELSE "False" END FROM trazabilidad_sociomarca where idMarca=marca_id and socio_id = '+str(socio.codigoUnicoIdentif)
         marcasSocio = Marca.objects.extra(select={'checkSocioMarca': condicion})
@@ -448,13 +456,12 @@ def apiariosSocio(request, id):
             {'form':form, 'socio':socio},
             context_instance=RequestContext(request))
 
-
-
-
-# ================================= #
+#-------------------------------------------------------#
+#-----------   Remitos   -------------------------------#
 
 @login_required
 def remitos(request):
+    #--  funcion que retorna todos los remitos  --#
     """ Gestion de remitos """
     remitos = Remito.objects.all()
     return render_to_response('trazabilidad/remitos.html',{'remitos':remitos},context_instance=RequestContext(request))
@@ -462,6 +469,7 @@ def remitos(request):
 
 @login_required
 def ingresarRemito(request):
+    ##-- funcion para dar de alta un remito  --#
     user = request.user
     name = 'ingresar Lote'
     if request.POST:
@@ -471,10 +479,10 @@ def ingresarRemito(request):
             form = FormRemito(request.POST)
         if form.is_valid():
             form.save()
-            url = '/lotes/'
+            url = '/remitos/'
             return HttpResponseRedirect(url)  
     else:
         form = formLote(request.POST)
-    return render_to_response('trazabilidad/ingresar-lote.html',{'form':form, 'name':name}, context_instance=RequestContext(request))
+    return render_to_response('remitos/ingresar-remito.html',{'form':form, 'name':name}, context_instance=RequestContext(request))
 
 
