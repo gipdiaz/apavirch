@@ -8,8 +8,7 @@ from django import forms
 from django.template import RequestContext, Template, Context
 from django.contrib.contenttypes.models import ContentType
 from .models import *
-from .forms import FormLote, GrupoAlzaFormSet, FormSocioEditar, FormSocio, FormMarcaSocio, MarcaFormSet, ApiarioSocioFormSet, FormRemito, RemitoDetalleFormSet
-from django.forms.models import inlineformset_factory
+from .forms import FormLote, GrupoAlzaFormSet, FormSocioEditar, FormSocio, FormMarcaSocio, MarcaFormSet
 from django.forms import Form
 
 # ================================= #
@@ -342,8 +341,20 @@ def socios(request):
 @login_required
 def tambores(request):
     """ Gestion de tambores """
-    tambores = Tambor.objects.all()
-    return render_to_response('trazabilidad/tambores.html',{'tambores':tambores},context_instance=RequestContext(request))
+    if request.GET.get('id') != None:
+        print "entre al ajax"
+        id = request.GET.get('id')
+        lote = Lote.objects.get(pk=id)
+        estado = Extraido.objects.get(lote=lote)
+        buscar = True
+        busqueda = "Lote "+str(lote.pk)
+        tambores = Tambor.objects.filter(loteExtraido=estado)
+        print "antes del render"
+        return render_to_response('trazabilidad/tambores.html',{'buscar':buscar,'busqueda':busqueda,'tambores':tambores},context_instance=RequestContext(request))
+    else:
+        buscar = False
+        tambores = Tambor.objects.all()
+        return render_to_response('trazabilidad/tambores.html',{'buscar':buscar,'tambores':tambores},context_instance=RequestContext(request))
 
 
 #-------------------------------------------------------#

@@ -38,16 +38,11 @@ $(function () {
                         +'</div>';
 
     $(document).ready(function(){
+        //console.error(tambores)
 
         $('.btn-accion').tooltip();
         
-        $('#tabla-lotes').dataTable({
-            "oLanguage": {
-                "sUrl": "/static/js/libs/datatables/language.es.json",
-            },
-            "oSearch": {"sSearch": "Initial search"},
-            
-        });
+        
         
         //-- Manejador de los botones de estado --//
         $(".btn-estado").click( function() {
