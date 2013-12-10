@@ -1,0 +1,65 @@
+{% extends "trazabilidad/modal.html" %}
+{% block modaltitle %}
+Apiarios de {{ socio.nombreYApellido }}
+{% endblock %}
+{% block modalbody %}
+    {% load eztables %}
+
+    <!-- STYLES -->
+
+    {% datatables_bootstrap_css %}
+    
+    <!-- JAVASCRIPTS -->
+
+    {% datatables_js %}
+    {% datatables_bootstrap_js %}
+<script>
+$(function(){
+ $(document).ready(function(){
+        $('#tabla-apiarios').dataTable({
+            "oLanguage": {  
+                "sUrl": "/static/js/libs/datatables/language.es.json"},
+                "bLengthChange":false,
+        });
+            
+  }); 
+});
+</script>
+
+
+<form id="apiariosSocio" method="post" action="/socios/apiarios-socio/{{ socio.codigoUnicoIdentif }}/">
+  {% csrf_token %}
+  {{ form.management_form }}
+  {{ form.non_form_errors }}
+
+
+ {{form.as_table}}
+  <div class="row top-margin">        
+        <table  id="tabla-apiarios" class="table table-condensed table-hover">
+           <thead>
+                <tr>
+                    <th>Nº Chacra</th>
+                    <th>Cantidad Colmenas</th>
+                    <th>xxxxxxx</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for form in form.forms %}  
+                <tr>                                        
+                    <td>{{form.nroChacra}}</td>                     
+                    <td>{{form.cantidadColmenas}}</td>
+                </tr>                                        
+              {%endfor%}
+            
+    
+            </tbody> 
+        </table>
+  </div>
+
+</form>
+{% endblock %}
+
+{% block modalfooter %}
+  <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+  <input type="submit" value="Guardar" class="submit btn btn-primary" form="marcasSocio"/>
+{% endblock %}

@@ -8,7 +8,7 @@ from django import forms
 from django.template import RequestContext, Template, Context
 from django.contrib.contenttypes.models import ContentType
 from .models import *
-from .forms import FormLote, GrupoAlzaFormSet, FormSocioEditar, FormSocio, FormMarcaSocio, MarcaFormSet
+from .forms import FormLote, GrupoAlzaFormSet, FormSocioEditar, FormSocio, FormMarcaSocio, MarcaFormSet, ApiarioSocioFormSet
 from django.forms.models import inlineformset_factory
 from django.forms import Form
 
@@ -376,4 +376,69 @@ def marcasSocio(request, id):
             context_instance=RequestContext(request))
 
 # ================================= #
+
+#====================================
+
+@login_required
+def apiariosSocio(request, id):
+    socio = Socio.objects.get(pk=id)
+    
+    if request.POST:        
+        formset = MarcaFormSet(request.POST)
+        for form in formset:             
+            if form.is_valid():
+                if form.cleaned_data['checkSocioMarca']:
+                    idMarca = form.cleaned_data['idMarca']
+                    marca = Marca.objects.get(pk=idMarca)     
+                    #import pdb; pdb.set_trace()             
+                    if len(SocioMarca.objects.filter(socio=socio, marca=marca)) == 0:
+                        print marca.idMarca  
+                        socioMarca = SocioMarca(socio=socio, marca=marca, fechaValidez=timezone.now())
+                        socioMarca.save()
+                        print 'grabo'
+                else:
+                    idMarca = form.cleaned_data['idMarca']
+                    marca = Marca.objects.get(pk=idMarca)     
+                    #import pdb; pdb.set_trace()             
+                    if len(SocioMarca.objects.filter(socio=socio, marca=marca)) != 0:
+                        print marca.idMarca  
+                        SocioMarca.objects.get(socio=socio, marca=marca).delete()
+                        print 'borrl'   
+
+        return HttpResponseRedirect('/socios/')
+
+    else:
+        condicion = 'SELECT CASE WHEN idMarca=marca_id THEN "True" ELSE "False" END FROM trazabilidad_sociomarca where idMarca=marca_id and socio_id = '+str(socio.codigoUnicoIdentif)
+        marcasSocio = Marca.objects.extra(select={'checkSocioMarca': condicion})
+
+        initial_data = []        
+        for marca in marcasSocio:            
+            aux = {}
+            for f in marca._meta.fields:
+                if f.name in ['tipoMarca']:
+                    aux['tipoMarca'] = getattr(marca, f.name).descripcion
+                else:
+                    aux[f.name] = getattr(marca, f.name)
+            aux['checkSocioMarca'] = marca.checkSocioMarca
+            initial_data.append(aux)
+
+        apiariosSocio = Apiario.objects.all().filter(socio = socio)
+        print apiariosSocio
+        form = ApiarioSocioFormSet(queryset=apiariosSocio)
+        print form
+
+        return render_to_response('trazabilidad/apiarios-socio.html',
+            {'form':form, 'socio':socio},
+            context_instance=RequestContext(request))
+
+
+
+
+# ================================= #
+
+@login_required
+def remitos(request):
+    """ Gestion de remitos """
+    remitos = Remito.objects.all()
+    return render_to_response('trazabilidad/remitos.html',{'remitos':remitos},context_instance=RequestContext(request))
 
