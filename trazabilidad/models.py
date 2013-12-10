@@ -78,7 +78,7 @@ class Marca (models.Model):
 
 ## ------------------------------------------- ##
 class Persona (models.Model):
-    codigoUnicoIdentif = models.IntegerField(primary_key = True, blank = False) #CUIT / CUIL, verificar sea correcto
+    codigoUnicoIdentif = models.BigIntegerField(primary_key = True, blank = False) #CUIT / CUIL, verificar sea correcto
     tipoDocumento = models.ForeignKey(TipoDocumento, null = False)
     nroDocumento = models.IntegerField(blank = False)
     nombreYApellido = models.CharField(max_length=200, blank = False)       
