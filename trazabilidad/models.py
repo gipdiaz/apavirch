@@ -17,7 +17,7 @@ class TipoEnvase (models.Model):
         verbose_name_plural = "Tipos de Envases"
 
     def __unicode__(self):
-        return u'%s %s %s' % (self.peso, self.fabricante)
+        return u'%s %s' % (self.peso, self.fabricante)
 
 ## ------------------------------------------- ##
 class TipoDocumento (models.Model):
@@ -106,6 +106,7 @@ class Persona (models.Model):
 #         return self.nombre
 
 ## ------------------------------------------- ##
+
 class Socio(Persona):
     nroRenapa = models.CharField(unique=True, max_length=200, blank = False)
     marcas = models.ManyToManyField(Marca, through="SocioMarca")
@@ -431,4 +432,4 @@ class RemitoDetalle (models.Model):
         verbose_name_plural = "Detalles de Remitos"
     
     def __unicode__(self):
-        pass
+        return u'%s' % (self.idRemitoDetalle)

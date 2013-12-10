@@ -14,20 +14,21 @@
     {% datatables_js %}
     {% datatables_bootstrap_js %}
     <script type="text/javascript" src="/static/js/remitos.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/lotes.css">
 
 {% endblock %}
   
 {% block body %}
     <div class="row center">
         <div class="col-sm-12">
-            <h1> Gestión de Remitos </h1>
+            <h1 style="margin:0px 0px 0px 0px;"> Gestión de Remitos </h1>
         </div>
     </div>
     <div class ="row">
         <div class="btn-group">
-            <button type="button" class="btn btn-sm btn-warning" onclick="ingresarSocio()">Ingresar Remito</button>
-            <button type="button" class="btn btn-sm btn-warning">Listar Remitos</button>
-            <button type="button" class="btn btn-sm btn-warning">Accion</button>
+            <button type="button" class="btn btn-sm btn-warning" onclick="ingresarRemito()">Ingresar Remito</button>
+            <!--<button type="button" class="btn btn-sm btn-warning">Listar Remitos</button>
+            <button type="button" class="btn btn-sm btn-warning">Accion 3</button>-->
         </div>
     </div>
     <div class="row top-margin">
@@ -45,14 +46,14 @@
             {% for remito in remitos %}
 			 <tr>
                   <td name="idRemito">{{ remito.idRemito }}</td>
-                  <td>{{ remito.socio.nombreYApellido }}</td>
+                  <td>{{ remito.remitoDetallesocio.nombreYApellido }}</td>
 	              <td>{{ remito.fecha }}</td>
 	              <td>{{ remito.observacion }}</td>
                   <td class="center">                
                         <button id="btn_editar_{{ remito.idRemito }}" type="button" class="btn btn-info btn-xs" 
-                            onclick="editarSocio({{ remito.idRemito }})">Editar</button>
+                            onclick="editarRemito({{ remito.idRemito }})">Editar</button>
                         <button id="btn_editar_{{ remito.idRemito }}" type="button" class="btn btn-danger btn-xs"
-                            onclick="eliminarSocio({{ remito.idRemito }})">Eliminar</button>              
+                            onclick="eliminarRemito({{ remito.idRemito }})">Eliminar</button>              
                   </td>                
               </tr>
             {% endfor %}

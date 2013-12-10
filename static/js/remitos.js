@@ -11,10 +11,11 @@ function eliminarRemito (id) {
 
 $(function () { 
     $(document).ready(function(){
+        //----   seteo el contexto de la tabla que contiene remitos  -----
         $('#tabla-remitos').dataTable({
             "oLanguage": {
                 "sUrl": "/static/js/libs/datatables/language.es.json"
             },
-        }); 
-    }); 
+        });   
+    });
 });
