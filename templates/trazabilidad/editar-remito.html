@@ -1,0 +1,74 @@
+{% extends 'trazabilidad/base.html' %}
+{% block head %}
+    <title>Editar Remito</title>
+    <script src="{{ STATIC_URL }}js/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="/static/js/gst-remitos.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/lotes.css">
+{% endblock %}
+
+{% block body %}
+    <div class ="row">
+        <div class="row center">
+            <div class="col-sm-12">
+                <h1> Editar Remito </h1>
+            </div>
+        </div>
+        <form class="form-horizontal" action="." method="post">
+            <div class="col-md-10">
+                <legend>Remito</legend>
+                {% csrf_token %}
+                {% for f in form %}
+                {% if f.label != "Peso" %}
+                    {% if f.errors %}
+                        <div class="form-group alert alert-danger">
+                            <label class="col-md-2 control-label" for="input{{f.label}}">{{f.label}}</label>
+                            <div class="col-md-10">
+                                {{f}}
+                                <span class="help-inline">
+                                    {% for error in  f.errors %}{{ error }}{% endfor %}
+                                </span>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="form-group">
+                            <label class="col-md-2 control-label" for="input{{f.label}}">{{f.label}}</label>
+                            <div class="col-md-10">
+                                {{f}}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+                {% endfor %}
+                {{ form.management_form }}
+                {{ form.non_form_errors }}
+            </div>
+            <div class="col-md-10 top-margin">
+                <legend>Detalles</legend>
+                <table id="grupo-alza" class="table table-condensed table-striped table-hover">
+                   <thead>
+                        <tr>
+                            <th>Tipo de Alza</th>
+                            <th>Peso</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                   <tbody>
+                       {% for form in remitoDetalle_form.forms %}               
+                       <tr class="item">
+                          <td>{{ form.tambor.errors }}{{ form.tambor }}</td>
+                          <td>{{ form.fraccionamiento.errors }}{{ form.fraccionamiento }}</td>       
+                           <td><button id="delete" type="button" class="btn btn-danger btn-xs">Eliminar</button></td>                   
+                          
+                       </tr>
+                       {% endfor %}
+                   </tbody>
+                </table>
+                {{ remitoDetalle_form.management_form }}
+                {{ remitoDetalle_form.non_form_errors }}        
+                <button id="add" type="button" class="btn btn-success btn-xs">Agregar otro Detalle</button>
+                <hr>  
+                <input type="submit" value="Guardar" class="submit btn btn-primary" />
+            </div>
+        </form>
+    </div>
+{% endblock %}
