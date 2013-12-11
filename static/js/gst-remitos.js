@@ -12,7 +12,7 @@ $(function () {
             //$(this).next('.fraccionamiento').children().first().disabled=true;
         });
         */
-
+        
         function updateElementIndex(el, prefix, ndx) {
                 var id_regex = new RegExp('(' + prefix + '-\\d+-)');
                 var replacement = prefix + '-' + ndx + '-';
@@ -82,5 +82,7 @@ $(function () {
         $("#delete").click(function () {
             return deleteForm(this, "remitodetalle_set");
         });     
+
+        //addForm(($("#add").first(), "remitodetalle_set");
     }); 
 });
