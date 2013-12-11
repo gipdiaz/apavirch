@@ -1,5 +1,16 @@
 $(function () { 
     $(document).ready(function(){
+
+        $('.tambor').change(function(){
+            $(this).next().children().first().remove();//first().val('---');
+            //$(this).next('.fraccionamiento').children().first().disabled=true;
+        });
+
+        $('.fraccionamiento').change(function(){
+            $(this).prev().children().first().remove();//first().val('---');
+            //$(this).next('.fraccionamiento').children().first().disabled=true;
+        });
+
         function updateElementIndex(el, prefix, ndx) {
                 var id_regex = new RegExp('(' + prefix + '-\\d+-)');
                 var replacement = prefix + '-' + ndx + '-';
@@ -7,7 +18,7 @@ $(function () {
                 replacement));
                 if (el.id) el.id = el.id.replace(id_regex, replacement);
                 if (el.name) el.name = el.name.replace(id_regex, replacement);
-        }
+        };
 
         function deleteForm(btn, prefix) {
             var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
@@ -26,10 +37,10 @@ $(function () {
                 }
             } // End if
             else {
-                alert("Se debe ingresar como mínimo un Grupo de Alza");
+                alert("Se debe ingresar como mínimo un detalle al Remito");
             }
             return false;
-        }
+        };
 
         function addForm(btn, prefix) {
             console.error(prefix)
@@ -59,7 +70,8 @@ $(function () {
             // Update the total form count
             $("#id_" + prefix + "-TOTAL_FORMS").val(formCount + 1);
             return false;
-        }
+        };
+
         // Register the click event handlers
         $("#add").click(function () {
             return addForm(this, "remitodetalle_set");

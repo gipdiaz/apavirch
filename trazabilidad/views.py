@@ -5,6 +5,7 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django import forms 
+from django.forms.models import inlineformset_factory
 from django.template import RequestContext, Template, Context
 from django.contrib.contenttypes.models import ContentType
 from .models import *
@@ -471,6 +472,7 @@ def remitos(request):
     remitos = Remito.objects.all()
     return render_to_response('trazabilidad/remitos.html',{'remitos':remitos},context_instance=RequestContext(request))
 
+'''
 @login_required
 def ingresarRemito(request):
     ##-- funcion para dar de alta un remito  --#
@@ -489,17 +491,7 @@ def ingresarRemito(request):
         form = formLote(request.POST)
     return render_to_response('trazabilidad/ingresar-remito.html',{'form':form, 'name':name}, context_instance=RequestContext(request))
 
-
-
-
-
-
-
-
-
-
-
-
+'''
 
 class CrearRemitoView(CreateView):
     template_name = 'trazabilidad/ingresar-remito.html'
@@ -521,7 +513,6 @@ class CrearRemitoView(CreateView):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         remitoDetalle_form = RemitoDetalleFormSet(self.request.POST)
-        #grupoAlza_form.clean()
         if (form.is_valid() and remitoDetalle_form.is_valid()):
             return self.form_valid(form, remitoDetalle_form, request.user)
         else:
@@ -531,24 +522,17 @@ class CrearRemitoView(CreateView):
         peso = 0
         if form.is_valid():
             remito = Remito(operario=user, socio = form.cleaned_data['socio'], observacion=form.cleaned_data['observacion'])
-
+            remito.save()            
             for f in remitoDetalle_form:
-                try:                
-                    if f.cleaned_data['fraccionamiento']:
-                        remitoDetalle = RemitoDetalle(remito = form.cleaned_data['idRemito'], tambor = None, fraccionamiento = f.cleaned_data['fraccionamiento'])
-                    else:
-                        remitoDetalle = RemitoDetalle(remito = form.cleaned_data['idRemito'], tambor = f.cleaned_data['tambor'], fraccionamiento = None)
-                except KeyError:
-                    pass
-
-            estado = Ingresado(observacion='Ingresado', peso=peso, operario=user)
-            estado.save()
-            lote = Lote(apiario=form.cleaned_data['apiario'], peso=peso, observacion=form.cleaned_data['observacion'], content_type = ContentType.objects.get_for_model(estado), object_id = estado.pk)
-            lote.save()
-            estado.lote = lote
-            estado.save()
-            remitoDetalle_form.instance = lote
-            remitoDetalle_form.save()
+                if f.is_valid():
+                    try:                                        
+                        if f.cleaned_data['fraccionamiento'].__class__.__name__ == "Fraccionamiento":                            
+                            remitoDetalle = RemitoDetalle(remito = remito, tambor = f.cleaned_data['tambor'], fraccionamiento = f.cleaned_data['fraccionamiento'])
+                        else:
+                            remitoDetalle = RemitoDetalle(remito = form.cleaned_data['idRemito'], tambor = f.cleaned_data['tambor'], fraccionamiento = None)
+                        remitoDetalle.save()
+                    except KeyError:
+                        pass
             return HttpResponseRedirect('/remitos/')
 
     def form_invalid(self, form, remitoDetalle_form):
@@ -558,45 +542,41 @@ class CrearRemitoView(CreateView):
 
 #@login_required
 class EditarRemitoView(UpdateView):
-    template_name = 'trazabilidad/editar-lote.html'
-    model = Lote
-    form_class = FormLote
-    success_url = '/lotes/'
+    template_name = 'trazabilidad/editar-remito.html'
+    model = Remito
+    form_class = FormRemito
+    success_url = '/remitos/'
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        if GrupoAlza.objects.filter(lote=self.object).count() == 0:
-            extra = 1
-        else:
-            extra = 0
-        GrupoAlzaFormSet = inlineformset_factory(Lote, GrupoAlza, extra=extra, max_num=3, can_delete=True, fields=("idGrupoAlza","tipoAlza","lote","cantidadAlzas","peso"))
-        grupoAlza_form = GrupoAlzaFormSet(instance = self.object)
+        form = self.get_form(form_class)    
+        RemitoDetalleFormSet = inlineformset_factory(Remito, RemitoDetalle, extra=1, can_delete=True, fields=("idRemitoDetalle","remito","tambor","fraccionamiento",))
+        remitoDetalle_form = RemitoDetalleFormSet(instance = self.object)
         return self.render_to_response(
             self.get_context_data(form=form,
-                                  grupoAlza_form=grupoAlza_form))
+                                  remitoDetalle_form=remitoDetalle_form))
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        grupoAlza_form = GrupoAlzaFormSet(request.POST, request.FILES, instance=self.object)
-        if (form.is_valid() and grupoAlza_form.is_valid()):
-            return self.form_valid(form, grupoAlza_form, request.user)
+        remitoDetalle_form = RemitoDetalleFormSet(request.POST, request.FILES, instance=self.object)
+        if (form.is_valid() and remitoDetalle_form.is_valid()):
+            return self.form_valid(form, remitoDetalle_form, request.user)
         else:
-            return self.form_invalid(form, grupoAlza_form)
+            return self.form_invalid(form, remitoDetalle_form)
 
-    def form_valid(self, form, grupoAlza_form, user):   
+    def form_valid(self, form, remitoDetalle_form, user):   
         self.object = form.save()
-        grupoAlza_form.instance = self.object
-        grupoAlza_form.save()
-        return HttpResponseRedirect('/lotes/')
+        remitoDetalle_form.instance = self.object
+        remitoDetalle_form.save()
+        return HttpResponseRedirect('/remitos/')
 
-    def form_invalid(self, form, grupoAlza_form):
+    def form_invalid(self, form, remitoDetalle_form):
         return self.render_to_response(
             self.get_context_data(form=form,
-                                  grupoAlza_form=grupoAlza_form))
+                                  remitoDetalle_form=remitoDetalle_form))
 
 
 @login_required
