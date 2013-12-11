@@ -1,0 +1,45 @@
+{% extends "trazabilidad/modal.html" %}
+{% block modaltitle %}
+Fraccionar el tambor número <strong>{{ tambor.idTambor }}</strong> del lote número <strong>{{ tambor.loteExtraido.lote.idLote }}</strong> del socio <strong>{{ tambor.loteExtraido.lote.apiario.socio }}</strong>
+{% endblock %}
+{% block modalbody %}
+    {% load eztables %}
+
+    <!-- STYLES -->
+
+    {% datatables_bootstrap_css %}
+    
+    <!-- JAVASCRIPTS -->
+
+    {% datatables_js %}
+    {% datatables_bootstrap_js %}
+<script>
+$(function(){
+ $(document).ready(function(){
+        // $('#tabla-marcas').dataTable({
+        //     "oLanguage": {  
+        //         "sUrl": "/static/js/libs/datatables/language.es.json"},
+        //         "bLengthChange":false,
+        // });
+            
+  }); 
+});
+</script>
+
+
+<form id="fraccionar" method="post" action="/tambores/fraccionar/{{ tambor.idTambor }}/">
+  {% csrf_token %}
+  {{ form.management_form }}
+  {{ form.non_form_errors }}
+
+  <div class="row top-margin">        
+        {{form.as_p}}
+  </div>
+
+</form>
+{% endblock %}
+
+{% block modalfooter %}
+  <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+  <input type="submit" value="Guardar" class="submit btn btn-primary" form="fraccionar"/>
+{% endblock %}

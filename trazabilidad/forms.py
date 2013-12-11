@@ -1,6 +1,6 @@
 from django import forms
 from django.forms.models import BaseInlineFormSet
-from .models import Lote, GrupoAlza, Socio, SocioMarca, Marca
+from .models import Lote, GrupoAlza, Socio, SocioMarca, Marca, TipoEnvase
 from django.forms import ModelForm, Form
 from django.forms.models import inlineformset_factory, formset_factory, modelformset_factory
 from django.core.exceptions import ValidationError
@@ -63,7 +63,7 @@ class FormMarcaSocio(Form):
 
 MarcaFormSet = formset_factory(FormMarcaSocio, extra = 0)
 
-
-
-
-
+#=======================
+class FormTambor(Form):
+    tipoEnvase = forms.ModelChoiceField(queryset=TipoEnvase.objects.all(), required=True)
+    marca = forms.ModelChoiceField(queryset=Marca.objects.all(), required=True)

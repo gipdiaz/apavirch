@@ -5,6 +5,9 @@ distribute==0.6.24
 django-admin-bootstrapped==1.6.2
 django-extensions==1.2.5
 django-eztables==0.3.2
+django-wkhtmltopdf==1.2
 django.js==0.8.1
+ipython==1.1.0
+psycopg2==2.5.1
 six==1.4.1
 wsgiref==0.1.2

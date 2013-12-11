@@ -37,9 +37,9 @@
                     <th>CUIT / CUIL</th>
                     <th>Nro Renapa</th>
                     <th>Nombre y Apellido</th>
-                    <th>Estado Actual</th>
-                    <th>Cambiar de Estado</th>
-                    <th>Acciones</th>
+                    <th class="text-center">Estado Actual</th>
+                    <th class="text-center">Cambiar de Estado</th>
+                    <th class="text-center">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -79,28 +79,28 @@
 							class="btn btn-danger btn-xs btn-estado">Desactivar</button>
                     {% endif %}
                 </td>  
-
                 <td class="center"> 
                     {% if socio.estadoActual.descripcion|stringformat:"s" == "Inactivo" %}            
-                    <button type="button" class="btn btn-info btn-xs" 
-						onclick="editarSocio({{socio.codigoUnicoIdentif}})" disabled>Editar</button>
-                    <button type="button" class="btn btn-danger btn-xs"
- 						onclick="eliminarSocio({{socio.codigoUnicoIdentif}})" disabled>Eliminar</button>
                     <a href="/socios/marcas-socio/{{socio.codigoUnicoIdentif}}/" class="btn btn-lima btn-xs" 
-                        data-toggle="modal" data-target="#myModal" disabled>Marcas</a>
+                        data-toggle="modal" data-target="#myModal" disabled>Marcas</a>&nbsp;&nbsp;
                     {% endif %}
                     {% if socio.estadoActual.descripcion|stringformat:"s" != "Inactivo" %}
-                        <button id="btn_editar_{{ socio.codigoUnicoIdentif }}" type="button" class="btn btn-info btn-xs" 
-                            onclick="editarSocio({{socio.codigoUnicoIdentif}})">Editar</button>
-                        <button id="btn_editar_{{ socio.codigoUnicoIdentif }}" type="button" class="btn btn-danger btn-xs"
-                            onclick="eliminarSocio({{socio.codigoUnicoIdentif}})">Eliminar</button>
                         <a id="btn_editar_{{ socio.codigoUnicoIdentif }}" 
                             href="/socios/marcas-socio/{{socio.codigoUnicoIdentif}}/" class="btn btn-lima btn-xs" 
                             data-toggle="modal" data-target="#myModal">Marcas</a>                            
                         <a id="btn_editar_{{ socio.codigoUnicoIdentif }}" 
-                            href="/socios/apiarios-socio/{{socio.codigoUnicoIdentif}}/" class="btn btn-lima btn-xs" 
-                            data-toggle="modal" data-target="#myModal">Apiarios</a>                            
-                    {% endif %}   
+                            href="/socios/apiarios-socio/{{socio.codigoUnicoIdentif}}/" class="btn btn-info btn-xs" 
+                            data-toggle="modal" data-target="#myModal">Apiarios</a>&nbsp;&nbsp;
+                    {% endif %}
+                    <button id="btn_editar_{{ socio.codigoUnicoIdentif }}" type="button" class="btn btn-muyoscuro btn-xs btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Editar el socio" onclick="editarSocio({{socio.codigoUnicoIdentif}})">
+                        <span class="glyphicon glyphicon-edit"></span>
+                    </button>
+                    <button id="btn_eliminar_{{ socio.codigoUnicoIdentif }}" type="button" class="btn btn-danger btn-xs btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Eliminar el socio" onclick="eliminarSocio({{socio.codigoUnicoIdentif}})">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </button>&nbsp;&nbsp;
+                    <button id="pdf_{{ socio.codigoUnicoIdentif }}" type="button" class="btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Listar los lotes del socio" onclick="reporte({{socio.codigoUnicoIdentif}})">    
+                        <img height="16" width="16" src="/static/img/pdf.png">
+                    </button>
                 </td>                
             </tr>
             {% endfor %}

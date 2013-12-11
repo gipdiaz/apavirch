@@ -45,78 +45,41 @@
     </div>
     <div class ="row">
         <div class="btn-group">
-            <button type="button" class="btn btn-sm btn-warning" onclick="ingresarLote()">Ingresar Lote</button>
-            <!--<button type="button" class="btn btn-sm btn-warning">Listar Lotes</button>
-            <button type="button" class="btn btn-sm btn-warning">Accion 3</button>-->
+            <button type="button" class="hidden btn btn-sm btn-warning" onclick="ingresarLote()">Ingresar Lote</button>
         </div>
     </div>
     <div class="row top-margin">
         <table  id="tabla-lotes" class="table table-bordered table-condensed table-striped table-hover">
             <thead>
                 <tr>
-                    <th class="hidden"></th>
+                    <th>Tambor</th>
                     <th>Lote Extraido</th>
                     <th>Peso</th>
-                    <th>Fraccionado</th>
                     <th>Operario</th>
                     <th class="text-center">Estado Actual</th>
-                    <th class="text-center">Cambiar de Estado</th>
                     <th class="text-center">Acciones</th>
                 </tr>
             </thead>
             <tbody>
             {% for tambor in tambores %}
             <tr id="tr-{{tambor.idTambor}}">
-                <td class="hidden" name="idTambor">{{tambor.idTambor}}</td>
+                <td name="idTambor">{{tambor.idTambor}}</td>
                 <td>Lote {{ tambor.loteExtraido.lote.pk }}</td>
                 <td>{{ tambor.peso }}</td>
-                <td>{{ tambor.fraccionado }}</td>
                 <td>{{ tambor.operario }}</td>
                 <td class="center">
-                    {% if lote.estadoActual|stringformat:"s" == "Ingresado" %}
-                        <p class="etiqueta"><span id="lb-estado-{{lote.idLote}}" class="label label-success">{{ lote.estadoActual }}</span></p>
-                    {% endif %}
-                    {% if lote.estadoActual|stringformat:"s" == "Devuelto" %}
-                        <p class="etiqueta"><span id="lb-estado-{{lote.idLote}}" class="label label-primary">{{ lote.estadoActual }}</span></p>
-                    {% endif %}
-                    {% if lote.estadoActual|stringformat:"s" == "Extraido" %}
-                        <p class="etiqueta" ><span id="lb-estado-{{lote.idLote}}" class="label label-warning">{{ lote.estadoActual }}</span></p>
+                    {% if tambor.fraccionado %}
+                        <p class="etiqueta"><span id="lb-estado-{{tambor.idTambor}}" class="label label-success">Fraccionado</span></p>
+                    {% else%}
+                        <p class="etiqueta"><span id="lb-estado-{{tambor.idTambor}}" class="label label-primary">No Fraccionado</span></p>
                     {% endif %}
                 </td>
                 <td class="center">
-                    {% if lote.estadoActual|stringformat:"s" == "Ingresado" %}
-                        <button type="button" id="{{lote.idLote}}" class="btn btn-warning btn-xs btn-estado">Extraer</button>
-                    {% endif %}
-                    {% if lote.estadoActual|stringformat:"s" == "Devuelto" %}
-                        <!--<button type="button" id="{{lote.idLote}}" class="btn btn-danger btn-xs btn-estado" disabled="disabled"><span class="glyphicon glyphicon-ban-circle"></span></button>-->
-                    {% endif %}
-                    {% if lote.estadoActual|stringformat:"s" == "Extraido" %}
-                        <button type="button" id="{{lote.idLote}}" class="btn btn-primary btn-xs btn-estado">Devolver</button>
-                        <button type="button" class="btn btn-muyoscuro btn-xs btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Deshacer la extracción">
-                            <span class="glyphicon glyphicon-minus-sign"></span>
-                        </button>
-                        <button type="button" class="btn btn-muyoscuro btn-xs btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Editar el lote" disabled="disabled" onclick="editarLote({{lote.idLote}})">
-                            <span class="glyphicon glyphicon-edit"></span>
-                        </button>
-                    {% endif %}
-                </td>
-                <td class="center">
-                    
-                    {% if lote.estadoActual|stringformat:"s" == "Ingresado" %}
-                        <button type="button" class="btn btn-muyoscuro btn-xs btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Editar el Lote" onclick="editarLote({{lote.idLote}})">
-                            <span class="glyphicon glyphicon-edit"></span>
-                        </button>
-                        <button type="button" class="btn btn-danger btn-xs btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Eliminar el lote" onclick="eliminarLote({{lote.idLote}})">
-                        <span class="glyphicon glyphicon-remove"></span>
-                    </button>
+                    {% if not tambor.fraccionado %}
+                        <a id="btn_editar_{{ tambor.idTambor }}" href="/tambores/fraccionar/{{tambor.idTambor}}/" class="btn btn-success btn-xs" 
+                            data-toggle="modal" data-target="#modal-fraccionar">Fraccionar</a>
                     {% else %}
-                        <button id="btn-extraer-{{lote.idLote}}" type="button" class="btn btn-xs btn-lima btn-accion btn-extraccion" data-toggle="modal" data-target="#modal-extraer" data-toggle="tooltip" data-placement="top" data-original-title="Ver el lote extraido">Lote</button>&nbsp;&nbsp;
-                        <button type="button" class="btn btn-muyoscuro btn-xs btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Editar el lote" disabled="disabled" onclick="editarLote({{lote.idLote}})">
-                            <span class="glyphicon glyphicon-edit"></span>
-                        </button>
-                        <button type="button" class="btn btn-danger btn-xs btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Eliminar el lote" disabled="disabled" onclick="eliminarLote({{lote.idLote}})">
-                        <span class="glyphicon glyphicon-remove"></span>
-                    </button>
+                        <button id="btn-lote-{{lote.idLote}}" type="button" class="btn btn-xs btn-warning btn-accion btn-fraccionamiento" data-toggle="modal" data-target="#modal-fraccionamiento" data-toggle="tooltip" data-placement="top" data-original-title="Ver el fraccionamiento">Fraccionamiento</button>&nbsp;&nbsp;                    
                     {% endif %}
                 </td>
             </tr>
@@ -126,6 +89,7 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="modal-extraer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"></div>
+    <div class="modal fade" id="modal-fraccionar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"></div>
+    <div class="modal fade" id="modal-fraccionamiento" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"></div>
 
 {% endblock %}

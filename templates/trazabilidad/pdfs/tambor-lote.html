@@ -1,0 +1,61 @@
+{% load url from future %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+    <head>
+        <title>Listado de tambores</title>
+        <link type="text/css" rel="stylesheet" href="/home/gaston/workspace-django/apavirch/static/css/bootstrap.min.css">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    </head>
+    <body onload="subst()">
+      <div class="container">
+        <div class="row">
+          <div style="margin:5px;" class="page-header">
+            <table>
+              <tbody>
+                <tr>
+                  <td><img src="/home/gaston/workspace-django/apavirch/static/img/icon-apavirch.png" height="70px"> </td>
+                  <td>
+                    <h1 style="margin:0px;">Apavirch</h1>
+                    <h1 style="margin:0px;"><small style="margin:0px;">Asociación de Apicultores del Valle Inferior del Río Chubut</small></h1>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>  
+        </div>
+        <br>
+        <div class="row">
+          <h4>Listado de tambores del lote número <strong>{{ lote.idLote }}</strong> del socio <strong>{{ socio }}</strong></h4>
+        </div>
+        <br>
+        <div class="row">
+          <table  id="tabla-tambores" class="table table-bordered table-condensed table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>idTambor</th>
+                    <th>Peso</th>
+                    <th>Operario</th>
+                    <th class="text-center">Estado Actual</th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for tambor in tambores %}
+                <tr>
+                      <td name="id">{{ tambor.idTambor }}</td>
+                      <td>{{ tambor.peso }}</td>
+                      <td>{{tambor.operario}}</td>
+                      <td class="text-center">
+                        {% if tambor.fraccionado %}
+                        <p class="etiqueta"><span id="lb-estado-{{tambor.idTambor}}" class="label label-success">Fraccionado</span></p>
+                        {% else%}
+                        <p class="etiqueta"><span id="lb-estado-{{tambor.idTambor}}" class="label label-primary">No Fraccionado</span></p>
+                        {% endif %}
+                      </td>                
+                </tr>
+              {% endfor %}
+            </tbody> 
+        </table>
+        </div>
+      </div>
+    </body>
+</html>
