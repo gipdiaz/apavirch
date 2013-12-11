@@ -1,10 +1,6 @@
 from django import forms
 from django.forms.models import BaseInlineFormSet
-<<<<<<< HEAD
-from .models import Lote, GrupoAlza, Socio, SocioMarca, Marca, TipoEnvase
-=======
-from .models import Lote, GrupoAlza, Socio, SocioMarca, Marca, Apiario, Remito, RemitoDetalle
->>>>>>> c7308a40d2161b07ce1bc3b12f04e33ef72f806c
+from .models import Lote, GrupoAlza, Socio, SocioMarca, Marca, TipoEnvase, Apiario, Remito, RemitoDetalle
 from django.forms import ModelForm, Form
 from django.forms.models import inlineformset_factory, formset_factory, modelformset_factory
 from django.core.exceptions import ValidationError
