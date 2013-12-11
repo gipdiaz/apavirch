@@ -581,7 +581,7 @@ class EditarRemitoView(UpdateView):
 
 @login_required
 def eliminarRemito(request, id):
-    lote = Lote.objects.get(pk=id)
-    GrupoAlza.objects.filter(lote=lote).delete()
-    lote.delete()
-    return HttpResponseRedirect("/lotes/")
+    remito = Remito.objects.get(pk=id)
+    RemitoDetalle.objects.filter(remito = remito).delete()
+    remito.delete()
+    return HttpResponseRedirect("/remitos/")

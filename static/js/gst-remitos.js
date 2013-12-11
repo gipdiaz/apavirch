@@ -1,6 +1,7 @@
 $(function () { 
     $(document).ready(function(){
 
+        /*
         $('.tambor').change(function(){
             $(this).next().children().first().remove();//first().val('---');
             //$(this).next('.fraccionamiento').children().first().disabled=true;
@@ -10,6 +11,7 @@ $(function () {
             $(this).prev().children().first().remove();//first().val('---');
             //$(this).next('.fraccionamiento').children().first().disabled=true;
         });
+        */
 
         function updateElementIndex(el, prefix, ndx) {
                 var id_regex = new RegExp('(' + prefix + '-\\d+-)');

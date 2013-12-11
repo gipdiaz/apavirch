@@ -425,8 +425,8 @@ class Remito (models.Model):
 class RemitoDetalle (models.Model):
     idRemitoDetalle = models.AutoField (primary_key = True)
     remito = models.ForeignKey (Remito, null = False)
-    tambor = models.ForeignKey (Tambor, null=True)
-    fraccionamiento = models.ForeignKey (Fraccionamiento, null=True)
+    tambor = models.ForeignKey (Tambor, null=True, blank=True)
+    fraccionamiento = models.ForeignKey (Fraccionamiento, null=True, blank = True)
     
     class Meta:        
         verbose_name_plural = "Detalles de Remitos"
