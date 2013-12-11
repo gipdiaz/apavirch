@@ -423,7 +423,7 @@ def marcasSocio(request, id):
                         print 'borrl'   
         return HttpResponseRedirect('/socios/')
     else:
-        condicion = 'SELECT CASE WHEN idMarca=marca_id THEN "True" ELSE "False" END FROM trazabilidad_sociomarca where idMarca=marca_id and socio_id = '+str(socio.codigoUnicoIdentif)
+        condicion = 'SELECT CASE WHEN idmarca=marca_id THEN "True" ELSE "False" END FROM trazabilidad_sociomarca where idmarca=marca_id and socio_id = '+str(socio.codigoUnicoIdentif)
         marcasSocio = Marca.objects.extra(select={'checkSocioMarca': condicion})
         initial_data = []        
         for marca in marcasSocio:            
