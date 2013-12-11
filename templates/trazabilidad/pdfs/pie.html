@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+    <head>
+
+        <script type="text/javascript">
+        function subst() {
+        var vars={};
+        var x=document.location.search.substring(1).split('&');
+        for (var i in x) {var z=x[i].split('=',2);vars[z[0]] = unescape(z[1]);}
+        var x=['frompage','topage','page','webpage','section','subsection','subsubsection'];
+        for (var i in x) {
+        var y = document.getElementsByClassName(x[i]);
+        for (var j=0; j<y.length; ++j) y[j].textContent = vars[x[i]];
+        }
+        }
+        </script>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link type="text/css" rel="stylesheet" href="/home/gaston/workspace-django/apavirch/static/css/bootstrap.min.css">
+    </head>
+    <body style="text-align: center;border:0; margin:0px 0px 0px 0px;" onload="subst()">
+        Página <span class="page"></span> de <span class="topage"></span>
+    </body>
+</html>

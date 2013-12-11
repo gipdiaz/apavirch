@@ -9,7 +9,8 @@ from django.forms.models import inlineformset_factory
 from django.template import RequestContext, Template, Context
 from django.contrib.contenttypes.models import ContentType
 from .models import *
-from .forms import FormLote, GrupoAlzaFormSet, FormSocioEditar, FormSocio, FormMarcaSocio, MarcaFormSet, FormRemito, RemitoDetalleFormSet
+from .forms import FormLote, GrupoAlzaFormSet, FormSocioEditar, FormSocio, FormMarcaSocio, MarcaFormSet, FormTambor, FormRemito, RemitoDetalleFormSet
+
 from django.forms import Form
 
 # ================================= #
@@ -357,6 +358,39 @@ def tambores(request):
         tambores = Tambor.objects.all()
         return render_to_response('trazabilidad/tambores.html',{'buscar':buscar,'tambores':tambores},context_instance=RequestContext(request))
 
+@login_required
+def fraccionar(request, id):
+    #-- funcion para asignar marcas a socios --#
+    tambor = Tambor.objects.get(pk=id)
+    socio = tambor.loteExtraido.lote.apiario.socio
+    if request.POST:        
+        form = FormTambor(request.POST)          
+        if form.is_valid():
+            operario = request.user
+            tipoEnvase = form.cleaned_data['tipoEnvase']
+            #tipoEnvase = TipoEnvase.objects.get(pk=idTipoEnvase)
+            cantidadEnvases = tambor.peso / tipoEnvase.peso
+            marca = form.cleaned_data['marca']
+            #marca = Marca.objects.get(pk=idMarca)
+            if marca.habilitada(tambor):
+                frac = Fraccionamiento(tambor=tambor,tipoEnvase=tipoEnvase, marca=marca, operario=operario, cantidadEnvases=cantidadEnvases)
+                frac.save()
+                tambor.fraccionado = True
+                tambor.save()
+                return HttpResponseRedirect('/tambores/')
+            else:
+                msj = 'La ultima inspeccion no aprueba el fraccionamiento de la marca %s en el apiario %s' % (marca,tambor.loteExtraido.lote.apiario)
+                return HttpResponse(msj)
+    else:
+        form = FormTambor()    
+        return render_to_response('trazabilidad/fraccionar.html', {'form':form, 'socio':socio, 'tambor':tambor}, context_instance=RequestContext(request))
+
+def tamborFraccionado(request, id):
+    tambor = Tambor.objects.get(pk=id)
+    if tambor.fraccionado:
+        frac = Fraccionamiento.objects.get(tambor=tambor)
+    return render_to_response('trazabilidad/tambor-fraccionado.html',{'frac':frac}, context_instance=RequestContext(request))
+
 
 #-------------------------------------------------------#
 #-----------   Marcas   --------------------------------#
@@ -585,3 +619,62 @@ def eliminarRemito(request, id):
     RemitoDetalle.objects.filter(remito = remito).delete()
     remito.delete()
     return HttpResponseRedirect("/remitos/")
+
+
+#--------------------------------------------------------#
+#-----------   Reportes   -------------------------------#
+
+
+from wkhtmltopdf.views import PDFTemplateView
+
+from django.shortcuts import get_object_or_404
+
+class PDFLoteSocioView(PDFTemplateView):
+    template_name = 'trazabilidad/pdfs/lote-socio.html'
+    #header_template = 'trazabilidad/pdfs/cabecera.html'
+    footer_template = 'trazabilidad/pdfs/pie.html'
+    filename = 'lote-socio.pdf'
+    #context_object_name = "persona"
+    show_content_in_browser = True
+    cmd_options = {
+        'footer-line': True,
+    }
+
+    def __init__(self):
+        pass
+  
+    def get_context_data(self, **kwargs):
+        socio = get_object_or_404(Socio, codigoUnicoIdentif=self.kwargs['id_socio'])
+        lt = Lote.objects.all()
+        lotes = []
+        for l in lt:
+            if l.apiario.socio == socio:
+                lotes.append(l)
+        #for domicilio in domicilios:
+        #    domicilio.tipo = coremodels.DomicilioDePersona.objects.get(domicilio=domicilio.pk).tipo
+        if (lotes == []):
+            lotes = None
+        return {'socio': socio, 'lotes': lotes}
+
+class PDFTamborLoteView(PDFTemplateView):
+    template_name = 'trazabilidad/pdfs/tambor-lote.html'
+    #header_template = 'trazabilidad/pdfs/cabecera.html'
+    footer_template = 'trazabilidad/pdfs/pie.html'
+    filename = 'tambor-lote.pdf'
+    #context_object_name = "persona"
+    show_content_in_browser = True
+    cmd_options = {
+        'footer-line': True,
+    }
+
+    def __init__(self):
+        pass
+  
+    def get_context_data(self, **kwargs):
+        lote = get_object_or_404(Lote, idLote=self.kwargs['id_lote'])
+        socio = lote.apiario.socio
+        estado = Extraido.objects.get(lote=lote)
+        tambores = Tambor.objects.filter(loteExtraido=estado)
+        if (tambores == []):
+            tambores = None
+        return {'lote':lote, 'socio': socio, 'tambores': tambores}

@@ -1,0 +1,69 @@
+{% load url from future %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+    <head>
+        <title>Listado de lotes</title>
+        <link type="text/css" rel="stylesheet" href="/home/gaston/workspace-django/apavirch/static/css/bootstrap.min.css">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    </head>
+    <body onload="subst()">
+      <div class="container">
+        <div class="row">
+          <div style="margin:5px;" class="page-header">
+            <table>
+              <tbody>
+                <tr>
+                  <td><img src="/home/gaston/workspace-django/apavirch/static/img/icon-apavirch.png" height="70px"> </td>
+                  <td>
+                    <h1 style="margin:0px;">Apavirch</h1>
+                    <h1 style="margin:0px;"><small style="margin:0px;">Asociación de Apicultores del Valle Inferior del Río Chubut</small></h1>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>  
+        </div>
+        <br>
+        <div class="row">
+          <h4>Listado de lotes del socio <strong>{{ socio }}</strong></h4>
+        </div>
+        <br>
+        <div class="row">
+          <table  id="tabla-lotes" class="table table-bordered table-condensed table-striped table-hover">
+              <thead>
+                  <tr>
+                      <th>Id Lote</th>
+                      <th>Apiario</th>
+                      <th>Socio</th>
+                      <th>Peso</th>
+                      <th>Observación</th>
+                      <th class="text-center">Estado Actual</th>
+                  </tr>
+              </thead>
+              <tbody>
+              {% for lote in lotes %}
+              <tr id="tr-{{lote.idLote}}">
+                  <td>{{lote.idLote}}</td>
+                  <td>{{ lote.apiario }}</td>
+                  <td>{{ lote.apiario.socio }}</td>
+                  <td>{{ lote.peso }}</td>
+                  <td>{{ lote.observacion }}</td>
+                  <td class="text-center">
+                      {% if lote.estadoActual|stringformat:"s" == "Ingresado" %}
+                          <p class="etiqueta"><span id="lb-estado-{{lote.idLote}}" class="label label-success">{{ lote.estadoActual }}</span></p>
+                      {% endif %}
+                      {% if lote.estadoActual|stringformat:"s" == "Devuelto" %}
+                          <p class="etiqueta"><span id="lb-estado-{{lote.idLote}}" class="label label-primary">{{ lote.estadoActual }}</span></p>
+                      {% endif %}
+                      {% if lote.estadoActual|stringformat:"s" == "Extraido" %}
+                          <p class="etiqueta" ><span id="lb-estado-{{lote.idLote}}" class="label label-warning">{{ lote.estadoActual }}</span></p>
+                      {% endif %}
+                  </td>
+              </tr>
+              {% endfor %}
+              </tbody>
+          </table>
+        </div>
+      </div>
+    </body>
+</html>

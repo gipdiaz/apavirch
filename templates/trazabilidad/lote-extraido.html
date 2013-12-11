@@ -4,6 +4,12 @@ Tambores del lote número <strong>{{ lote.idLote }}</strong> del socio <strong>{
 {% endblock %}
 {% block modalbody %}
     <script type="text/javascript">
+    $(document).ready(function(){
+      $('.btn-accion').tooltip();
+    });
+        function reporte (id) {
+          open("/reportes/tambor-lote/" + id,"_self");
+        }
         function gstTambor (id) {
             //$.get( "/tambores/", { id: id});
             open("/tambores/?id="+id,"_self");
@@ -59,8 +65,8 @@ Tambores del lote número <strong>{{ lote.idLote }}</strong> del socio <strong>{
             <thead>
                 <tr>
                     <th>idTambor</th>
-                    <th>peso</th>
-                    <th>Fraccionado</th>
+                    <th>Peso</th>
+                    <th class="center">Estado Actual</th>
                     <th>Operario</th>
                 </tr>
             </thead>
@@ -69,13 +75,13 @@ Tambores del lote número <strong>{{ lote.idLote }}</strong> del socio <strong>{
     			      <tr>
                       <td name="id">{{ tambor.idTambor }}</td>
                       <td>{{ tambor.peso }}</td>
-                      <td>
-                            {% if tambor.fraccionado == False %}
-                                No
-                            {% else %}
-                                Si
-                            {% endif %}
-                      </td>	
+                      <td class="center">
+                    {% if tambor.fraccionado %}
+                        <p class="etiqueta"><span id="lb-estado-{{tambor.idTambor}}" class="label label-success">Fraccionado</span></p>
+                    {% else%}
+                        <p class="etiqueta"><span id="lb-estado-{{tambor.idTambor}}" class="label label-primary">No Fraccionado</span></p>
+                    {% endif %}
+                </td>
                       <td>{{tambor.operario}}</td>                
                 </tr>
               {% endfor %}
@@ -96,6 +102,9 @@ Tambores del lote número <strong>{{ lote.idLote }}</strong> del socio <strong>{
         </form>
 {% endblock %}
 {% block modalfooter %}
+    <button id="pdf_{{ lote.idLote }}" type="button" class="btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Ver este listado en PDF" onclick="reporte({{lote.idLote}})">  
+    <img height="30" width="30" src="/static/img/pdf.png">
+    </button>
     <button type="button" id="dextraccion" class="hidden btn btn-warning" onclick="dextraccionLote({{lote.idLote}},{{lote.peso}})">Guardar</button>
     <button type="button" id="dextraccionprev" class="btn btn-warning" onclick="dextraccionprevLote()">Editar extracción</button>
     <button type="button" class="btn btn-lima" onclick="gstTambor({{lote.idLote}})">Mas detalle</button>

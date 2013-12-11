@@ -7,10 +7,16 @@ function editarSocio (id) {
 function eliminarSocio (id) {
     open("/socios/eliminar-socio/" + id,"_self");
 }
+function reporte (id) {
+    open("/reportes/lote-socio/" + id,"_self");
+}
  
 
 $(function () { 
     $(document).ready(function(){
+        
+        $('.btn-accion').tooltip();
+
         $('#tabla-socios').dataTable({
             "oLanguage": {
                 "sUrl": "/static/js/libs/datatables/language.es.json"

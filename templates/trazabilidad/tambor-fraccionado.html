@@ -1,0 +1,55 @@
+{% extends "trazabilidad/modal.html" %}
+{% block modaltitle %}
+Fraccionamiento del tambor número <strong>{{ frac.tambor.idTambor }}</strong>
+{% endblock %}
+{% block modalbody %}
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $('.btn-accion').tooltip();
+      });  
+    </script>
+    <div class="row top-margin">
+        <table  id="tabla-tambores" class="table table-condensed table-hover">
+            <thead>
+                <tr>
+                    <th>id Fraccionamiento</th>
+                    <th>Tipo de Envase</th>
+                    <th>Marca</th>
+                    <th>Cantidad de Envases</th>
+                    <th>Operario</th>
+                </tr>
+            </thead>
+            <tbody>
+              
+    			      <tr>
+                      <td name="id">{{ frac.idFraccionamiento }}</td>
+                      <td>{{ frac.tipoEnvase.descripcion }}</td>
+                      <td>{{frac.marca}}</td>
+                      <td>{{frac.cantidadEnvases}}</td>
+                      <td>{{frac.operario}}</td>
+                </tr>
+
+            </tbody> 
+        </table>
+        <form id="form-peso" action="" method="POST" role="form" class="hidden">
+          <legend></legend>
+          <div class="form-group">
+            <label for="">Peso</label>
+            <input type="text" class="form-control" id="peso" name="peso" placeholder="Ingrese el nuevo peso">
+          </div>
+          <div class="form-group">
+            <label for="">Observacion</label>
+            <input type="text" class="form-control" id="peso" name="peso" placeholder="Ingrese una observacion">
+          </div>
+
+          {# <button type="submit" class="btn btn-primary">Guardar</button> #}
+        </form>
+{% endblock %}
+{% block modalfooter %}
+    <!--<button id="pdf_{{ lote.idLote }}" type="button" class="btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Ver este listado en PDF" onclick="reporte({{lote.idLote}})">  
+    <img height="30" width="30" src="/static/img/pdf.png">
+    </button>
+    <button type="button" id="dextraccionprev" class="btn btn-warning" onclick="dextraccionprevLote()">Editar extracción</button>
+    <button type="button" class="btn btn-lima" onclick="gstTambor({{lote.idLote}})">Mas detalle</button>-->
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+{% endblock %}

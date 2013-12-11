@@ -50,7 +50,7 @@ class TipoMarca (models.Model):
         verbose_name_plural = "Tipos de Marcas"
     
     def __unicode__(self):
-        return self.descripcion    
+        return self.descripcion
 
 ## ------------------------------------------- ##
 class Ciudad(models.Model):
@@ -72,6 +72,12 @@ class Marca (models.Model):
     class Meta:
         unique_together = ("descripcion","tipoMarca")
         verbose_name_plural = "Marcas"
+
+    def habilitada (self, tambor):
+        inspecciones = Inspeccion.objects.filter(tipoMarca=self.tipoMarca, apiario=tambor.loteExtraido.lote.apiario).order_by('-fechaInspeccion')
+        if len(inspecciones) != 0:
+            return inspecciones[0].cumpleProtocolo
+        return False
 
     def __unicode__(self):
         return u'%s' % (self.descripcion)
@@ -236,7 +242,7 @@ class Apiario(models.Model):
         verbose_name_plural = "Apiarios"
     
     def __unicode__(self):
-        return u'Cracha %s' % (self.nroChacra)
+        return u'Chacra %s' % (self.nroChacra)
 
 ## ------------------------------------------- ##
 class Inspeccion(models.Model):             
@@ -374,7 +380,7 @@ class Tambor (models.Model):
         verbose_name_plural = "Tambores"
     
     def __unicode__(self):
-        return u'%s %s' % (self.idTambor, self.loteExtraido)
+        return u'Tambor %s' % (self.idTambor)
 
 ## ------------------------------------------- ##
 class GrupoAlza (models.Model):             

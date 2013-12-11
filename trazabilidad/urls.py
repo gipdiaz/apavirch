@@ -19,6 +19,8 @@ urlpatterns = patterns('apavirch.trazabilidad.views',
     
     #-- Tambores --#
     url(r'^tambores/$',tambores),
+    url(r'^tambores/fraccionar/(?P<id>\d+)/$', fraccionar),
+    url(r'^tambores/tambor-fraccionado/(?P<id>\d+)/$', tamborFraccionado),
 
     #-- Socios --""
     url(r'^socios/$',socios),
@@ -31,8 +33,16 @@ urlpatterns = patterns('apavirch.trazabilidad.views',
 
     #-- Remitos --#
     url(r'^remitos/$', remitos),
+
+    #url(r'^remitos/ingresar-lote/$',CrearLoteView.as_view()),
+    #url(r'^remitos/editar-lote/(?P<pk>\d+)/$',EditarLoteView.as_view()),
+    #url(r'^remitos/eliminar-lote/(?P<id>\d+)/$',eliminarLote),
     url(r'^remitos/ingresar-remito/$',CrearRemitoView.as_view()),
     url(r'^remitos/editar-remito/(?P<pk>\d+)/$',EditarRemitoView.as_view()),
     url(r'^remitos/eliminar-remito/(?P<id>\d+)/$',eliminarRemito),
+
+    #-- Reportes --#
+    url(r'^reportes/lote-socio/(?P<id_socio>\d+)/$', PDFLoteSocioView.as_view()),
+    url(r'^reportes/tambor-lote/(?P<id_lote>\d+)/$', PDFTamborLoteView.as_view()),
     
 )

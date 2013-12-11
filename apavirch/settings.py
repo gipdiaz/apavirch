@@ -127,6 +127,7 @@ INSTALLED_APPS = (
     'trazabilidad',
     'south',
     'eztables',
+    'wkhtmltopdf',
 )
 
 #AUTOREPORTS_USE_CMSUTILS = False
