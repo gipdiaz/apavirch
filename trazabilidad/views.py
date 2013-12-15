@@ -2,7 +2,7 @@ from django.http import HttpResponse, request, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.views.generic import DetailView, ListView, CreateView, UpdateView
 from django.contrib import auth
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.forms import UserCreationForm
 from django import forms 
 from django.forms.models import inlineformset_factory
@@ -13,23 +13,31 @@ from .forms import FormLote, GrupoAlzaFormSet, FormSocioEditar, FormSocio, FormM
 
 from django.forms import Form
 
-# ================================= #
+#-------------------------------------------------------#
+#--------------------   EXTRAS   -----------------------#
+
+def group_required(*group_names):
+    def in_groups(u):
+        if u.is_authenticated():
+            if bool(u.groups.filter(name__in=group_names)) | u.is_superuser:
+                return True
+        return False
+    return user_passes_test(in_groups, login_url='/')
+
 @login_required
 def index(request):
-    """ Index del sistema """
     return render_to_response('trazabilidad/index.html',context_instance=RequestContext(request))
 
-# ================================= #
-#@login_required
+#-------------------------------------------------------#
+#-------------------   LOTES   -------------------------#
+
 class CrearLoteView(CreateView):
     template_name = 'trazabilidad/ingresar-lote.html'
     model = Lote
     form_class = FormLote
-    #success_url = 'success/'
 
     def get(self, request, *args, **kwargs):
         self.object = None
-        print "getttt"
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         grupoAlza_form = GrupoAlzaFormSet()
@@ -71,7 +79,6 @@ class CrearLoteView(CreateView):
             self.get_context_data(form=form,
                                   grupoAlza_form=grupoAlza_form))
 
-#@login_required
 class EditarLoteView(UpdateView):
     template_name = 'trazabilidad/editar-lote.html'
     model = Lote
@@ -112,27 +119,11 @@ class EditarLoteView(UpdateView):
         return self.render_to_response(
             self.get_context_data(form=form,
                                   grupoAlza_form=grupoAlza_form))
-@login_required
+
+@group_required('Encargados de Sala','Encargados de Entrada y Salida')
 def lotes(request):
     lotes = Lote.objects.all()
     return render_to_response('trazabilidad/lotes.html',{'lotes':lotes},context_instance=RequestContext(request))
-
-@login_required
-def ingresarLote(request):
-    #user = request.user
-    name = 'ingresar Lote'
-    if request.POST:
-        try:
-            form = formLote(request.POST)
-        except ValueError:
-            form = formLote(request.POST)
-        if form.is_valid():
-            form.save()
-            url = '/lotes/'
-            return HttpResponseRedirect(url)  
-    else:
-        form = formLote(request.POST)
-    return render_to_response('trazabilidad/ingresar-lote.html',{'form':form, 'name':name}, context_instance=RequestContext(request))
 
 @login_required
 def eliminarLote(request, id):
@@ -194,7 +185,7 @@ def loteExtraido(request, id):
 
 
 #-------------------------------------------------------#
-#-----------   Socios   --------------------------------#
+#-------------------   SOCIOS  -------------------------#
 
 
 class CrearSocioView(CreateView):
@@ -328,7 +319,7 @@ def desactivarSocio(request):
     else:
         return HttpResponse('No es una peticion Ajax')
 
-@login_required
+@group_required('Encargados de Sala')
 def socios(request):
     #--  funcion que retorna todos los socios  --#
     """ Gestion de socios """
@@ -337,11 +328,11 @@ def socios(request):
 
 
 #-------------------------------------------------------#
-#-----------   Tambores   ------------------------------#
+#------------------   TAMBORES   -----------------------#
 
-
-@login_required
-def tambores(request):
+@group_required('Encargados de Sala')
+def tambores(request, msj = None):
+    print msj
     """ Gestion de tambores """
     if request.GET.get('id') != None:
         print "entre al ajax"
@@ -352,37 +343,56 @@ def tambores(request):
         busqueda = "Lote "+str(lote.pk)
         tambores = Tambor.objects.filter(loteExtraido=estado)
         print "antes del render"
+        if msj != None:
+            return render_to_response('trazabilidad/tambores.html',{'msj':msj,'buscar':buscar,'busqueda':busqueda,'tambores':tambores},context_instance=RequestContext(request))
         return render_to_response('trazabilidad/tambores.html',{'buscar':buscar,'busqueda':busqueda,'tambores':tambores},context_instance=RequestContext(request))
     else:
         buscar = False
         tambores = Tambor.objects.all()
+        if msj != None:
+            return render_to_response('trazabilidad/tambores.html',{'msj':msj,'buscar':buscar,'tambores':tambores},context_instance=RequestContext(request))
         return render_to_response('trazabilidad/tambores.html',{'buscar':buscar,'tambores':tambores},context_instance=RequestContext(request))
 
 @login_required
 def fraccionar(request, id):
+    print "fracionando"
     #-- funcion para asignar marcas a socios --#
     tambor = Tambor.objects.get(pk=id)
     socio = tambor.loteExtraido.lote.apiario.socio
     if request.POST:        
-        form = FormTambor(request.POST)          
+        form = FormTambor(request.POST)
+        #form.clean()          
         if form.is_valid():
+            print ("el form es validator")
             operario = request.user
             tipoEnvase = form.cleaned_data['tipoEnvase']
-            #tipoEnvase = TipoEnvase.objects.get(pk=idTipoEnvase)
             cantidadEnvases = tambor.peso / tipoEnvase.peso
             marca = form.cleaned_data['marca']
-            #marca = Marca.objects.get(pk=idMarca)
-            if marca.habilitada(tambor):
-                frac = Fraccionamiento(tambor=tambor,tipoEnvase=tipoEnvase, marca=marca, operario=operario, cantidadEnvases=cantidadEnvases)
-                frac.save()
-                tambor.fraccionado = True
-                tambor.save()
-                return HttpResponseRedirect('/tambores/')
+            if socio.tieneMarca(marca):
+                if marca.habilitada(tambor, socio):
+                    frac = Fraccionamiento(tambor=tambor,tipoEnvase=tipoEnvase, marca=marca, operario=operario, cantidadEnvases=cantidadEnvases)
+                    frac.save()
+                    tambor.fraccionado = True
+                    tambor.save()
+                    print "return 1"
+                    return HttpResponse ("Funciono")
+                    #return HttpResponseRedirect('/tambores/')
+                else:
+                    #msj = 'La ultima inspeccion no aprueba el fraccionamiento de la marca %s en el apiario %s' % (marca,tambor.loteExtraido.lote.apiario)
+                    #tambores = Tambor.objects.all()
+                    #return render_to_response('trazabilidad/tambores.html',{'msj':msj,'tambores':tambores},context_instance=RequestContext(request))
+                    print "return 2"
+                    return HttpResponse ("No Funciono")
             else:
-                msj = 'La ultima inspeccion no aprueba el fraccionamiento de la marca %s en el apiario %s' % (marca,tambor.loteExtraido.lote.apiario)
-                return HttpResponse(msj)
+                return HttpResponse ("Funciono 2")
+                print "return 3"
+                #msj = 'El socio %s no posee la marca %s' % (socio, marca)
+                #tambores = Tambor.objects.all()
+                #return render_to_response('trazabilidad/tambores.html',{'msj':msj,'tambores':tambores},context_instance=RequestContext(request))
     else:
+
         form = FormTambor()    
+        print"este es el form", form
         return render_to_response('trazabilidad/fraccionar.html', {'form':form, 'socio':socio, 'tambor':tambor}, context_instance=RequestContext(request))
 
 def tamborFraccionado(request, id):
@@ -393,7 +403,7 @@ def tamborFraccionado(request, id):
 
 
 #-------------------------------------------------------#
-#-----------   Marcas   --------------------------------#
+#-------------------   MARCAS   ------------------------#
 
 
 @login_required
@@ -423,83 +433,51 @@ def marcasSocio(request, id):
                         print 'borrl'   
         return HttpResponseRedirect('/socios/')
     else:
-        condicion = 'SELECT CASE WHEN idmarca=marca_id THEN "True" ELSE "False" END FROM trazabilidad_sociomarca where idmarca=marca_id and socio_id = '+str(socio.codigoUnicoIdentif)
-        marcasSocio = Marca.objects.extra(select={'checkSocioMarca': condicion})
-        initial_data = []        
-        for marca in marcasSocio:            
+        # condicion = 'SELECT CASE WHEN idMarca=marca_id THEN "True" ELSE "False" END FROM trazabilidad_sociomarca where idMarca=marca_id and socio_id = '+str(socio.codigoUnicoIdentif)
+        # marcasSocio = Marca.objects.extra(select={'checkSocioMarca': condicion})
+        # initial_data = []        
+        # #import pdb; pdb.set_trace()
+        # for marca in marcasSocio:            
+        #     aux = {}
+        #     for f in marca._meta.fields:
+        #         if f.name in ['tipoMarca']:
+        #             aux['tipoMarca'] = getattr(marca, f.name).descripcion
+        #         else:
+        #             aux[f.name] = getattr(marca, f.name)
+        #     aux['checkSocioMarca'] = marca.checkSocioMarca
+        #     initial_data.append(aux)
+
+        # form = MarcaFormSet(initial=initial_data)
+
+        sm = socio.marcas.all()
+        marcas = Marca.objects.all()
+        initial_data = []
+        i = sm.count()
+        j = 0
+        for marca in marcas:
             aux = {}
-            for f in marca._meta.fields:
-                if f.name in ['tipoMarca']:
-                    aux['tipoMarca'] = getattr(marca, f.name).descripcion
-                else:
-                    aux[f.name] = getattr(marca, f.name)
-            aux['checkSocioMarca'] = marca.checkSocioMarca
+            aux['idMarca'] = marca.idMarca
+            aux['descripcion'] = marca.descripcion
+            aux['tipoMarca'] = marca.tipoMarca
+            aux['checkSocioMarca'] = False
+            if i > j:
+                print sm[j]
+                if sm[j] == marca:
+                    aux['checkSocioMarca'] = True
+                    j = j + 1
             initial_data.append(aux)
-
+        print "------------------------------"
+        print initial_data
         form = MarcaFormSet(initial=initial_data)
-
+        print form
         return render_to_response('trazabilidad/marcas-socio.html',
             {'form':form, 'socio':socio},
             context_instance=RequestContext(request))
 
 #-------------------------------------------------------#
-#-----------   Apiarios   ------------------------------#
+#------------------   REMITOS   ------------------------#
 
-@login_required
-def apiariosSocio(request, id):
-    #-- funcion para dar de alta apiarios al socio  --#
-    socio = Socio.objects.get(pk=id)
-    
-    if request.POST:        
-        formset = MarcaFormSet(request.POST)
-        for form in formset:             
-            if form.is_valid():
-                if form.cleaned_data['checkSocioMarca']:
-                    idMarca = form.cleaned_data['idMarca']
-                    marca = Marca.objects.get(pk=idMarca)     
-                    #import pdb; pdb.set_trace()             
-                    if len(SocioMarca.objects.filter(socio=socio, marca=marca)) == 0:
-                        print marca.idMarca  
-                        socioMarca = SocioMarca(socio=socio, marca=marca, fechaValidez=timezone.now())
-                        socioMarca.save()
-                        print 'grabo'
-                else:
-                    idMarca = form.cleaned_data['idMarca']
-                    marca = Marca.objects.get(pk=idMarca)     
-                    #import pdb; pdb.set_trace()             
-                    if len(SocioMarca.objects.filter(socio=socio, marca=marca)) != 0:
-                        print marca.idMarca  
-                        SocioMarca.objects.get(socio=socio, marca=marca).delete()
-                        print 'borrl'   
-        return HttpResponseRedirect('/socios/')
-    else:
-        condicion = 'SELECT CASE WHEN idMarca=marca_id THEN "True" ELSE "False" END FROM trazabilidad_sociomarca where idMarca=marca_id and socio_id = '+str(socio.codigoUnicoIdentif)
-        marcasSocio = Marca.objects.extra(select={'checkSocioMarca': condicion})
-
-        initial_data = []        
-        for marca in marcasSocio:            
-            aux = {}
-            for f in marca._meta.fields:
-                if f.name in ['tipoMarca']:
-                    aux['tipoMarca'] = getattr(marca, f.name).descripcion
-                else:
-                    aux[f.name] = getattr(marca, f.name)
-            aux['checkSocioMarca'] = marca.checkSocioMarca
-            initial_data.append(aux)
-
-        apiariosSocio = Apiario.objects.all().filter(socio = socio)
-        print apiariosSocio
-        form = ApiarioSocioFormSet(queryset=apiariosSocio)
-        print form
-
-        return render_to_response('trazabilidad/apiarios-socio.html',
-            {'form':form, 'socio':socio},
-            context_instance=RequestContext(request))
-
-#-------------------------------------------------------#
-#-----------   Remitos   -------------------------------#
-
-@login_required
+@group_required('Encargados de Sala')
 def remitos(request):
     #--  funcion que retorna todos los remitos  --#
     """ Gestion de remitos """
@@ -621,8 +599,8 @@ def eliminarRemito(request, id):
     return HttpResponseRedirect("/remitos/")
 
 
-#--------------------------------------------------------#
-#-----------   Reportes   -------------------------------#
+#-------------------------------------------------------#
+#-----------------   REPORTES   ------------------------#
 
 
 from wkhtmltopdf.views import PDFTemplateView

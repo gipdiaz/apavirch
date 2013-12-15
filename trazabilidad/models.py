@@ -17,7 +17,7 @@ class TipoEnvase (models.Model):
         verbose_name_plural = "Tipos de Envases"
 
     def __unicode__(self):
-        return u'%s %s' % (self.peso, self.fabricante)
+        return u'%s' % (self.descripcion)
 
 ## ------------------------------------------- ##
 class TipoDocumento (models.Model):
@@ -73,10 +73,11 @@ class Marca (models.Model):
         unique_together = ("descripcion","tipoMarca")
         verbose_name_plural = "Marcas"
 
-    def habilitada (self, tambor):
+    def habilitada (self, tambor, socio):
         inspecciones = Inspeccion.objects.filter(tipoMarca=self.tipoMarca, apiario=tambor.loteExtraido.lote.apiario).order_by('-fechaInspeccion')
-        if len(inspecciones) != 0:
-            return inspecciones[0].cumpleProtocolo
+        if self in socio.marcas.all():
+            if len(inspecciones) != 0 :
+                return inspecciones[0].cumpleProtocolo
         return False
 
     def __unicode__(self):
@@ -161,7 +162,10 @@ class Socio(Persona):
         self.marcas.add(marca)
         self.save()
 
-
+    def tieneMarca(self, marca):
+        if marca in self.marcas.all():
+            return True
+        return False
 
     class Meta:
         verbose_name_plural = "Socios"

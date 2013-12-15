@@ -113,7 +113,6 @@ TEMPLATE_DIRS = (
 
 INSTALLED_APPS = (
     'django_extensions',
-    'django_admin_bootstrapped.bootstrap3',
     'django_admin_bootstrapped',
     'django.contrib.admin',
     'django.contrib.admindocs',
@@ -128,7 +127,9 @@ INSTALLED_APPS = (
     'south',
     'eztables',
     'wkhtmltopdf',
+    #'bootstrapform',
 )
+
 
 #AUTOREPORTS_USE_CMSUTILS = False
 

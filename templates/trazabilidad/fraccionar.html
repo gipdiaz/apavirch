@@ -13,27 +13,39 @@ Fraccionar el tambor número <strong>{{ tambor.idTambor }}</strong> del lote nú
 
     {% datatables_js %}
     {% datatables_bootstrap_js %}
+    {% load bootstrap %}
 <script>
 $(function(){
  $(document).ready(function(){
-        // $('#tabla-marcas').dataTable({
-        //     "oLanguage": {  
-        //         "sUrl": "/static/js/libs/datatables/language.es.json"},
-        //         "bLengthChange":false,
-        // });
-            
+        $('#btn-fraccionar').click(function(event) {
+            var tipoEnvase = $('#id_tipoEnvase')[0].selectedIndex;
+            var marca = $('#id_marca')[0].selectedIndex;
+            if (tipoEnvase == 0) {
+              alert("Debe seleccionar un Tipo de Envase");
+              return false;
+            };
+            if (marca == 0) {
+              alert("Debe seleccionar una Marca");
+              return false;
+            };
+            var posting = $.post( "/tambores/fraccionar/{{ tambor.idTambor }}/", $("#form-fraccionar").serialize() );
+
+            posting.done(function( data ) {
+              alert(data);
+            }); 
+        });
   }); 
 });
 </script>
 
 
-<form id="fraccionar" method="post" action="/tambores/fraccionar/{{ tambor.idTambor }}/">
+<form id="form-fraccionar" method="post" action="/tambores/fraccionar/{{ tambor.idTambor }}/">
   {% csrf_token %}
   {{ form.management_form }}
   {{ form.non_form_errors }}
 
   <div class="row top-margin">        
-        {{form.as_p}}
+        {{form|bootstrap}}
   </div>
 
 </form>
@@ -41,5 +53,5 @@ $(function(){
 
 {% block modalfooter %}
   <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-  <input type="submit" value="Guardar" class="submit btn btn-primary" form="fraccionar"/>
+  <input id="btn-fraccionar" type="button" value="Guardar" class="submit btn btn-primary"/>
 {% endblock %}
