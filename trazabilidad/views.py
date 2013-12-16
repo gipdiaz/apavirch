@@ -5,11 +5,11 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django import forms 
-from django.forms.models import inlineformset_factory
+from django.forms.models import inlineformset_factory, formset_factory
 from django.template import RequestContext, Template, Context
 from django.contrib.contenttypes.models import ContentType
 from .models import *
-from .forms import FormLote, GrupoAlzaFormSet, FormSocioEditar, FormSocio, FormMarcaSocio, MarcaFormSet, FormTambor, FormRemito, RemitoDetalleFormSet
+from .forms import FormLote, GrupoAlzaFormSet, FormSocioEditar, FormSocio, FormMarcaSocio, MarcaFormSet, FormTambor, FormRemito, RemitoDetalleFormSet, RemitoDetalleForm
 
 from django.forms import Form
 
@@ -541,6 +541,8 @@ class CrearRemitoView(CreateView):
         return self.render_to_response(
             self.get_context_data(form=form,
                                   remitoDetalle_form=remitoDetalle_form))
+        #return render_to_response('trazabilidad/ingresar-remito.html',{'form':form, 'name':name}, context_instance=RequestContext(request))
+
 
     def post(self, request, *args, **kwargs):
         self.object = None
@@ -556,17 +558,25 @@ class CrearRemitoView(CreateView):
         peso = 0
         if form.is_valid():
             remito = Remito(operario=user, socio = form.cleaned_data['socio'], observacion=form.cleaned_data['observacion'])
-            remito.save()            
+            remito.save()
             for f in remitoDetalle_form:
                 if f.is_valid():
-                    try:                                        
-                        if f.cleaned_data['fraccionamiento'].__class__.__name__ == "Fraccionamiento":                            
-                            remitoDetalle = RemitoDetalle(remito = remito, tambor = f.cleaned_data['tambor'], fraccionamiento = f.cleaned_data['fraccionamiento'])
-                        else:
-                            remitoDetalle = RemitoDetalle(remito = form.cleaned_data['idRemito'], tambor = f.cleaned_data['tambor'], fraccionamiento = None)
+                    try:
+                        if f.cleaned_data['fraccionamiento'] != None:
+                            print 'es un fraccionamiento ', f.cleaned_data['fraccionamiento']
+                            remitoDetalle = RemitoDetalle(remito = remito, fraccionamiento = f.cleaned_data['fraccionamiento'])
+                        if f.cleaned_data['tambor'] != None:
+                            print 'es un tambor ', type(f.cleaned_data['tambor'])
+                            remitoDetalle = RemitoDetalle(remito = remito, tambor = f.cleaned_data['tambor']) 
                         remitoDetalle.save()
+                        #else:
+                        #    remitoDetalle = RemitoDetalle(remito = remito, tambor = f.cleaned_data['tambor'], fraccionamiento = None)
+                        #remitoDetalle.save()
                     except KeyError:
+                        remito.remove()                    
                         pass
+                else:
+                    remito.remove()
             return HttpResponseRedirect('/remitos/')
 
     def form_invalid(self, form, remitoDetalle_form):
@@ -585,16 +595,47 @@ class EditarRemitoView(UpdateView):
         self.object = self.get_object()
         form_class = self.get_form_class()
         form = self.get_form(form_class)    
-        RemitoDetalleFormSet = inlineformset_factory(Remito, RemitoDetalle, extra=1, can_delete=True, fields=("idRemitoDetalle","remito","tambor","fraccionamiento",))
-        remitoDetalle_form = RemitoDetalleFormSet(instance = self.object)
-        return self.render_to_response(
+        print '=============='
+        print form_class
+        print form
+        print '<<<<<<<<<<<<<<<'
+        RemitoDetalleFormSet = formset_factory(Remito, RemitoDetalle, extra=1, can_delete=True, fields=("","lote","cantidadAlzas","peso"))
+        remitoDetalle_form = RemitoDetalleFormSet()
+        return self.render_to_response(            
             self.get_context_data(form=form,
                                   remitoDetalle_form=remitoDetalle_form))
+        '''
+        tipoDetalle = forms.ChoiceField(choices = CHOICES, required=True)
+        tambor = forms.ModelChoiceField(queryset=Tambor.objects.all(), required = False)
+        fraccionamiento = forms.ModelChoiceField(queryset=Fraccionamiento.objects.all(), required = False)
+               
+        
+            prueba_periodo = Prueba.objects.get(pk=self.object.object_id).periodoAPrueba
+            form = FormSocio(instance = self.object, initial={'Prueba': prueba_periodo})
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+        self.object = self.get_object()
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        if GrupoAlza.objects.filter(lote=self.object).count() == 0:
+            extra = 1
+        else:
+            extra = 0
+        GrupoAlzaFormSet = inlineformset_factory(Lote, GrupoAlza, extra=extra, max_num=3, can_delete=True, fields=("idGrupoAlza","tipoAlza","lote","cantidadAlzas","peso"))
+        grupoAlza_form = GrupoAlzaFormSet(instance = self.object)
+        return self.render_to_response(
+            self.get_context_data(form=form,
+                                  grupoAlza_form=grupoAlza_form))
+        '''
+
+
+
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form_class = self.get_form_class()
-        form = self.get_form(form_class)
+        form = self.get_form(form_class)        
         remitoDetalle_form = RemitoDetalleFormSet(request.POST, request.FILES, instance=self.object)
         if (form.is_valid() and remitoDetalle_form.is_valid()):
             return self.form_valid(form, remitoDetalle_form, request.user)

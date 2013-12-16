@@ -13,31 +13,35 @@
                 <h1> Editar Remito </h1>
             </div>
         </div>
-        <form class="form-horizontal" action="." method="post">
+        <form id="formRemito" class="form-horizontal" action="." method="post">
             <div class="col-md-10">
                 <legend>Remito</legend>
                 {% csrf_token %}
-                {% for f in form %}
-                {% if f.label != "Peso" %}
-                    {% if f.errors %}
-                        <div class="form-group alert alert-danger">
-                            <label class="col-md-2 control-label" for="input{{f.label}}">{{f.label}}</label>
+                {% for f in form %}            
+                {% if f.errors %}
+                    <div class="form-group alert alert-danger">
+                        <label class="col-md-2 control-label" for="input{{f.label}}">{{f.label}}</label>
+                        <div class="col-md-10">
+                            {{f}}
+                            <span class="help-inline">
+                                {% for error in  f.errors %}{{ error }}{% endfor %}
+                            </span>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="input{{f.label}}">{{f.label}}</label>
+                        {% if f.label != "Socio" %}
                             <div class="col-md-10">
                                 {{f}}
-                                <span class="help-inline">
-                                    {% for error in  f.errors %}{{ error }}{% endfor %}
-                                </span>
                             </div>
-                        </div>
-                    {% else %}
-                        <div class="form-group">
-                            <label class="col-md-2 control-label" for="input{{f.label}}">{{f.label}}</label>
+                        {% else %}
                             <div class="col-md-10">
-                                {{f}}
+                                {{f.}}
                             </div>
-                        </div>
-                    {% endif %}
-                {% endif %}
+                        {% endif %}            
+                    </div>
+                {% endif %}            
                 {% endfor %}
                 {{ form.management_form }}
                 {{ form.non_form_errors }}
@@ -47,16 +51,25 @@
                 <table id="grupo-alza" class="table table-condensed table-striped table-hover">
                    <thead>
                         <tr>
-                            <th>Tipo de Alza</th>
-                            <th>Peso</th>
+                            <th>Tipo</th>
+                            <th>Tambor           Fraccionamiento</th>
                             <th></th>
                         </tr>
                     </thead>
                    <tbody>
                        {% for form in remitoDetalle_form.forms %}               
                        <tr class="item">
-                          <td>{{ form.tambor.errors }}{{ form.tambor }}</td>
-                          <td>{{ form.fraccionamiento.errors }}{{ form.fraccionamiento }}</td>       
+                          <td>
+                            {{ form.tipoDetalle }}
+                          </td>
+                          <td>
+                            {%if form.tambor.value != 0 %}
+                                {{ form.tambor }}
+                            {% endif %}    
+                            {%if form.fraccionamiento.value != 0 %}
+                                {{ form.fraccionamiento.value }}
+                            {% endif %}    
+                          </td>
                            <td><button id="delete" type="button" class="btn btn-danger btn-xs">Eliminar</button></td>                   
                           
                        </tr>

@@ -1,6 +1,6 @@
 from django import forms
 from django.forms.models import BaseInlineFormSet
-from .models import Lote, GrupoAlza, Socio, SocioMarca, Marca, TipoEnvase, Apiario, Remito, RemitoDetalle
+from .models import Lote, GrupoAlza, Socio, SocioMarca, Marca, TipoEnvase, Apiario, Remito, RemitoDetalle, Fraccionamiento, Tambor
 from django.forms import ModelForm, Form
 from django.forms.models import inlineformset_factory, formset_factory, modelformset_factory
 from django.core.exceptions import ValidationError
@@ -61,11 +61,16 @@ class FormMarcaSocio(Form):
 
 MarcaFormSet = formset_factory(FormMarcaSocio, extra = 0)
 
-#=======================
+#-------------------------------------------------------#
+#---------  Forms de Tambor  ---------------------------#
 
 class FormTambor(Form):
     tipoEnvase = forms.ModelChoiceField(queryset=TipoEnvase.objects.all(), required=True)
     marca = forms.ModelChoiceField(queryset=Marca.objects.all(), required=True)
+
+
+#-------------------------------------------------------#
+#---------  Forms de Apiario  ---------------------------#
 
 class FormApiarioSocio(Form):
     class Meta:
@@ -85,9 +90,15 @@ class FormRemito(ModelForm):
         fields = ('socio','observacion')
         model = Remito
 
-class RemitoDetalleForm(ModelForm):
-    class Meta:
-        model = RemitoDetalle
+class RemitoDetalleForm(Form):
+    CHOICES = (
+    (Tambor.__class__.__name__, 'Tambor'),
+    (Fraccionamiento.__class__.__name__, 'Fraccionamiento'),
+    )
+
+    tipoDetalle = forms.ChoiceField(choices = CHOICES, required=True)
+    tambor = forms.ModelChoiceField(queryset=Tambor.objects.all(), required = False)
+    fraccionamiento = forms.ModelChoiceField(queryset=Fraccionamiento.objects.all(), required = False)
 
 class RemitoDetalleRequiredFormSet(forms.models.BaseInlineFormSet):
 
@@ -105,5 +116,20 @@ class RemitoDetalleRequiredFormSet(forms.models.BaseInlineFormSet):
         if count < 1:
             raise forms.ValidationError('Se necesita al menos detalle')
 
-RemitoDetalleFormSet = inlineformset_factory(Remito, RemitoDetalle, form=RemitoDetalleForm, formset=RemitoDetalleRequiredFormSet, extra=1, fields=("idRemitoDetalle","remito","tambor","fraccionamiento",))
+RemitoDetalleFormSet = formset_factory(RemitoDetalleForm, extra=1)
+
+
+#-------------------------------------------------------#
+#---------  Forms de Remito  ---------------------------#
+
+class FormApiarioSocio(Form):
+    class Meta:
+        fields = ('nroChacra' ,'cantidadColmenas')
+        model = Apiario
+
+ApiarioSocioFormSet = modelformset_factory(Apiario, extra = 1)
+
+
+
+
 
