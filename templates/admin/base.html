@@ -137,7 +137,7 @@
     <div id="content" class="{% block coltype %}colM{% endblock %}">
         {% block navbar %}
         <div class="row-fluid">
-            {% if user.is_active and user.is_superuser %}
+            {% if user.is_active and user.is_staff %}
                 <div class="navbar">
                     <div class="navbar-inner">
                         {% block pretitle %}{% endblock %}

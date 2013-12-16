@@ -14,23 +14,29 @@
     {% datatables_js %}
     {% datatables_bootstrap_js %}
     <script type="text/javascript">
-        $(function () {$(document).ready(function(){
-            {% if buscar %}
-                var busqueda = "{{busqueda}}";
-                $('#tabla-lotes').dataTable({
-                    "oLanguage": {
-                        "sUrl": "/static/js/libs/datatables/language.es.json",
-                    },
-                    "oSearch": {"sSearch": busqueda},
-                });
-            {% else %}
-                $('#tabla-lotes').dataTable({
-                    "oLanguage": {
-                        "sUrl": "/static/js/libs/datatables/language.es.json",
-                    },
-                });
-            {% endif %}
-        });});
+        $(function () {
+            $(document).ready(function(){
+                {% if buscar %}
+                    var busqueda = "{{busqueda}}";
+                    $('#tabla-lotes').dataTable({
+                        "oLanguage": {
+                            "sUrl": "/static/js/libs/datatables/language.es.json",
+                        },
+                        "oSearch": {"sSearch": busqueda},
+                    });
+                {% else %}
+                    $('#tabla-lotes').dataTable({
+                        "oLanguage": {
+                            "sUrl": "/static/js/libs/datatables/language.es.json",
+                        },
+                    });
+                {% endif %}
+                {% if msj %}
+                    var msj = "{{msj}}";
+                    alert(msj);
+                {% endif %}
+            });
+        });
     </script>
     <script type="text/javascript" src="/static/js/tambores.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/tambores.css">

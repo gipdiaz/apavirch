@@ -58,6 +58,7 @@ class FormMarcaSocio(Form):
     idMarca = forms.IntegerField(required= False)
     descripcion = forms.CharField (max_length =20, required= False)
     tipoMarca = forms.CharField (max_length =20, required= False)
+    pepe = forms.CharField (max_length =20, required= True)
 
 MarcaFormSet = formset_factory(FormMarcaSocio, extra = 0)
 
@@ -65,8 +66,24 @@ MarcaFormSet = formset_factory(FormMarcaSocio, extra = 0)
 #---------  Forms de Tambor  ---------------------------#
 
 class FormTambor(Form):
-    tipoEnvase = forms.ModelChoiceField(queryset=TipoEnvase.objects.all(), required=True)
-    marca = forms.ModelChoiceField(queryset=Marca.objects.all(), required=True)
+    tipoEnvase = forms.ModelChoiceField(required=True, queryset=TipoEnvase.objects.all())
+    marca = forms.ModelChoiceField(required=True, queryset=Marca.objects.all())
+    
+
+        # def clean(self):
+        #     super(Form, self).clean()
+        #     print "pase por aca"
+        #     raise forms.ValidationError('Los dos campos son requeridos')
+        #     ok = False
+        #     try:
+        #         if self.cleaned_data['tipoEnvase'] != None and self.cleaned_data['marca'] != None:
+        #             print "True"
+        #             ok = True
+        #     except KeyError:
+        #         pass
+        #     if ok == False:
+        #         print "False"
+            
 
 
 #-------------------------------------------------------#

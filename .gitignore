@@ -7,7 +7,6 @@
 *.doc
 documentacion/
 *.pdf
-*.png
 *.graphml
 *.gan
 *.dot
