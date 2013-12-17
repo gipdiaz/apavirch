@@ -38,6 +38,7 @@
                     <th>Id Lote</th>
                     <th>Apiario</th>
                     <th>Socio</th>
+                    <th>Fecha de Alta</th>
                     <th>Peso</th>
                     <th>Observación</th>
                     <th class="text-center">Estado Actual</th>
@@ -51,6 +52,7 @@
                 <td name="idLote">{{lote.idLote}}</td>
                 <td>{{ lote.apiario }}</td>
                 <td>{{ lote.apiario.socio }}</td>
+                <td>{{lote.fecha}}</td>
                 <td>{{ lote.peso }}</td>
                 <td>{{ lote.observacion }}</td>
                 <td class="center">
@@ -68,15 +70,13 @@
                     {% if lote.estadoActual|stringformat:"s" == "Ingresado" %}
                         <button type="button" id="{{lote.idLote}}" class="btn btn-warning btn-xs btn-estado">Extraer</button>
                     {% endif %}
-                    {% if lote.estadoActual|stringformat:"s" == "Devuelto" %}
-                    {% endif %}
                     {% if lote.estadoActual|stringformat:"s" == "Extraido" %}
                         <button type="button" id="{{lote.idLote}}" class="btn btn-primary btn-xs btn-estado">Devolver</button>
                     {% endif %}
                 </td>
                 <td class="center">
                     {% if lote.estadoActual|stringformat:"s" == "Ingresado" %}
-                        <button id="btn-lote-{{lote.idLote}}" type="button" class="hidden btn btn-xs btn-lima btn-accion btn-extraccion" data-toggle="modal" data-target="#modal-extraer" data-toggle="tooltip" data-placement="top" data-original-title="Ver el lote extraido">Lote</button>&nbsp;&nbsp;
+                        <button id="btn-lote-{{lote.idLote}}" type="button" class="hidden btn btn-xs btn-lima btn-accion btn-extraccion" data-toggle="modal" data-target="#modal-extraer" data-toggle="tooltip" data-placement="top" data-original-title="Ver el lote extraido">Ver lote</button>
                         <button type="button" class="btn btn-muyoscuro btn-xs btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Editar el Lote" onclick="editarLote({{lote.idLote}})">
                             <span class="glyphicon glyphicon-edit"></span>
                         </button>
@@ -84,11 +84,11 @@
                         <span class="glyphicon glyphicon-remove"></span>
                         </button>
                     {% else %}
-                        <button id="btn-lote-{{lote.idLote}}" type="button" class="btn btn-xs btn-lima btn-accion btn-extraccion" data-toggle="modal" data-target="#modal-extraer" data-toggle="tooltip" data-placement="top" data-original-title="Ver el lote extraido">Lote</button>&nbsp;&nbsp;
-                        <button type="button" class="btn btn-muyoscuro btn-xs btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Editar el lote" disabled="disabled" onclick="editarLote({{lote.idLote}})">
+                        <button id="btn-lote-{{lote.idLote}}" type="button" class="btn btn-xs btn-lima btn-accion btn-extraccion" data-toggle="modal" data-target="#modal-extraer" data-toggle="tooltip" data-placement="top" data-original-title="Ver el lote extraido">Ver lote</button>
+                        <button type="button" class="hidden btn btn-muyoscuro btn-xs btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Editar el lote" onclick="editarLote({{lote.idLote}})">
                             <span class="glyphicon glyphicon-edit"></span>
                         </button>
-                        <button type="button" class="btn btn-danger btn-xs btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Eliminar el lote" disabled="disabled" onclick="eliminarLote({{lote.idLote}})">
+                        <button type="button" class="hidden btn btn-danger btn-xs btn-accion" data-toggle="tooltip" data-placement="top" data-original-title="Eliminar el lote" onclick="eliminarLote({{lote.idLote}})">
                         <span class="glyphicon glyphicon-remove"></span>
                         </button>
                     {% endif %}

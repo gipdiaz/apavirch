@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -85,13 +86,14 @@ class Marca (models.Model):
 
 ## ------------------------------------------- ##
 class Persona (models.Model):
-    codigoUnicoIdentif = models.BigIntegerField(primary_key = True, blank = False) #CUIT / CUIL, verificar sea correcto
-    tipoDocumento = models.ForeignKey(TipoDocumento, null = False)
-    nroDocumento = models.IntegerField(blank = False)
-    nombreYApellido = models.CharField(max_length=200, blank = False)       
-    direccion = models.CharField(max_length = 30, blank = False)
-    telefono = models.IntegerField(default = 0)
-    email = models.EmailField(max_length = 75)
+    codigoUnicoIdentif = models.BigIntegerField(primary_key = True, blank = False, verbose_name=u"CUIL / CUIT")
+    tipoDocumento = models.ForeignKey(TipoDocumento, null = False, verbose_name=u"Tipo de Documento")
+    nroDocumento = models.IntegerField(blank = False, verbose_name=u"Número de Documento")
+    nombreYApellido = models.CharField(max_length=200, blank = False, verbose_name=u"Nombre y Apellido")       
+    direccion = models.CharField(max_length = 30, blank = False, verbose_name=u"Dirección")
+    ciudad = models.ForeignKey(Ciudad, null = False)
+    telefono = models.IntegerField(default = 0, verbose_name=u"Teléfono")
+    email = models.EmailField(max_length = 75, verbose_name=u"Email")
     fechaAlta = models.DateTimeField(default = timezone.now())
     
     class Meta:
@@ -115,9 +117,8 @@ class Persona (models.Model):
 ## ------------------------------------------- ##
 
 class Socio(Persona):
-    nroRenapa = models.CharField(unique=True, max_length=200, blank = False)
+    nroRenapa = models.CharField(unique=True, max_length=200, blank = False, verbose_name=u"Número de Renapa")
     marcas = models.ManyToManyField(Marca, through="SocioMarca")
-
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
     estadoActual = generic.GenericForeignKey('content_type', 'object_id')
@@ -233,13 +234,12 @@ class SocioMarca (models.Model):
 
         return u'%s' % (self.socio)
 
-
 ## ------------------------------------------- ##
 class Apiario(models.Model):         
-    nroChacra = models.CharField(primary_key=True,max_length = 30, blank=False)
+    nroChacra = models.CharField(primary_key=True,max_length = 30, blank=False, verbose_name=u"Número de Chacra")
     socio = models.ForeignKey(Socio, null = False)
-    cantidadColmenas = models.IntegerField(default = 0)
-    fechaAlta = models.DateTimeField(default = timezone.now())
+    cantidadColmenas = models.IntegerField(default = 0, verbose_name=u"Cantidad de Colmenas")
+    fechaAlta = models.DateTimeField(default = timezone.now(), verbose_name=u"Fecha de Alta")
     operario = models.ForeignKey(User, null=False)
     
     class Meta:
@@ -252,9 +252,9 @@ class Apiario(models.Model):
 class Inspeccion(models.Model):             
     idInspeccion = models.AutoField(primary_key = True)     
     apiario = models.ForeignKey(Apiario, null=False)
-    tipoMarca = models.ForeignKey(TipoMarca, null=False)
-    fechaInspeccion = models.DateTimeField('Fecha de Inspeccion', blank = False)
-    cumpleProtocolo = models.BooleanField (default = False)
+    tipoMarca = models.ForeignKey(TipoMarca, null=False, verbose_name=u"Tipo de Marca")
+    fechaInspeccion = models.DateTimeField(blank = False, verbose_name=u"Fecha de Inspección")
+    cumpleProtocolo = models.BooleanField (default = False, verbose_name=u"Cumple el Protocolo")
     observacion = models.CharField(max_length=300, blank = False)
     operario = models.ForeignKey(User, null=False)
     
@@ -270,6 +270,7 @@ class Lote(models.Model):
     apiario = models.ForeignKey(Apiario)
     peso = models.DecimalField(max_digits = 10, decimal_places = 2, blank = True, default = 0)
     observacion = models.CharField(max_length=300)
+    fecha = models.DateTimeField (default = timezone.now())
 
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()

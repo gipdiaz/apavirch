@@ -23,19 +23,22 @@
             </table>
           </div>  
         </div>
-        <br>
         <div class="row">
-          <h4>Listado de tambores del lote número <strong>{{ lote.idLote }}</strong> del socio <strong>{{ socio }}</strong></h4>
+          <h3>Detalle del lote extraido</h3>
+          <b>Lote Extraído Número</b>: <i>{{ lote.idLote }}</i><br>
+          <b>Socio</b>: <i>{{lote.apiario.socio.nombreYApellido}}</i><br>
+          <b>Fecha de extracción</b>: <i>{{lote.estadoActual.fecha}}</i><br>
+          <b>Peso de extracción</b>: <i>{{lote.estadoActual.peso}}</i>
         </div>
         <br>
         <div class="row">
           <table  id="tabla-tambores" class="table table-bordered table-condensed table-striped table-hover">
             <thead>
                 <tr>
-                    <th>idTambor</th>
+                    <th>Tambor</th>
                     <th>Peso</th>
-                    <th>Operario</th>
                     <th class="text-center">Estado Actual</th>
+                    <th>Operario</th>
                 </tr>
             </thead>
             <tbody>
@@ -43,14 +46,14 @@
                 <tr>
                       <td name="id">{{ tambor.idTambor }}</td>
                       <td>{{ tambor.peso }}</td>
-                      <td>{{tambor.operario}}</td>
                       <td class="text-center">
                         {% if tambor.fraccionado %}
                         <p class="etiqueta"><span id="lb-estado-{{tambor.idTambor}}" class="label label-success">Fraccionado</span></p>
                         {% else%}
                         <p class="etiqueta"><span id="lb-estado-{{tambor.idTambor}}" class="label label-primary">No Fraccionado</span></p>
                         {% endif %}
-                      </td>                
+                      </td>
+                      <td>{{tambor.operario}}</td>
                 </tr>
               {% endfor %}
             </tbody> 

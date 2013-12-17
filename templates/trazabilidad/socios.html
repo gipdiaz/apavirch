@@ -37,6 +37,8 @@
                     <th>CUIT / CUIL</th>
                     <th>Nro Renapa</th>
                     <th>Nombre y Apellido</th>
+                    <th>Ciudad</th>
+                    <th>Fecha de Alta</th>
                     <th class="text-center">Estado Actual</th>
                     <th class="text-center">Cambiar de Estado</th>
                     <th class="text-center">Acciones</th>
@@ -48,6 +50,8 @@
                   <td name="codigoUnicoIdentif">{{socio.codigoUnicoIdentif}}</td>
                   <td>{{ socio.nroRenapa }}</td>
 	              <td>{{ socio.nombreYApellido }}</td>
+                  <td>{{socio.ciudad}}</td>
+                  <td>{{socio.fechaAlta}}</td>
 	              <td class="center">                    
 	                  {% if socio.estadoActual.descripcion|stringformat:"s" == "A Prueba" %}
 	                       <p style="font-size:16px;margin:0px 0px 5px 0px;">

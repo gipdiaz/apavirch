@@ -1,10 +1,19 @@
 {% extends "trazabilidad/modal.html" %}
 {% block modaltitle %}
-Tambores del lote número <strong>{{ lote.idLote }}</strong> del socio <strong>{{lote.apiario.socio.nombreYApellido}}</strong>
+<h3>Detalle del lote extraido</h3>
+<b>Lote Extraído Número</b>: <i>{{ lote.idLote }}</i><br>
+<b>Socio</b>: <i>{{lote.apiario.socio.nombreYApellido}}</i><br>
+<b>Fecha de extracción</b>: <i>{{lote.estadoActual.fecha}}</i><br>
+<b>Peso de extracción</b>: <i>{{lote.estadoActual.peso}}</i>
 {% endblock %}
 {% block modalbody %}
     <script type="text/javascript">
     $(document).ready(function(){
+      var msj = "{{msj}}";
+      if (msj=="No tiene permisos para realizar esta tarea") {
+          alert(msj);
+          open("/lotes/","_self");
+      };
       $('.btn-accion').tooltip();
     });
         function reporte (id) {
@@ -60,11 +69,11 @@ Tambores del lote número <strong>{{ lote.idLote }}</strong> del socio <strong>{
         
     </script>
 
-    <div class="row top-margin">
+    <div class="row">
         <table  id="tabla-tambores" class="table table-condensed table-hover">
             <thead>
                 <tr>
-                    <th>idTambor</th>
+                    <th>Tambor</th>
                     <th>Peso</th>
                     <th class="center">Estado Actual</th>
                     <th>Operario</th>
@@ -76,12 +85,12 @@ Tambores del lote número <strong>{{ lote.idLote }}</strong> del socio <strong>{
                       <td name="id">{{ tambor.idTambor }}</td>
                       <td>{{ tambor.peso }}</td>
                       <td class="center">
-                    {% if tambor.fraccionado %}
-                        <p class="etiqueta"><span id="lb-estado-{{tambor.idTambor}}" class="label label-success">Fraccionado</span></p>
-                    {% else%}
-                        <p class="etiqueta"><span id="lb-estado-{{tambor.idTambor}}" class="label label-primary">No Fraccionado</span></p>
-                    {% endif %}
-                </td>
+                        {% if tambor.fraccionado %}
+                            <p class="etiqueta"><span id="lb-estado-{{tambor.idTambor}}" class="label label-success">Fraccionado</span></p>
+                        {% else%}
+                            <p class="etiqueta"><span id="lb-estado-{{tambor.idTambor}}" class="label label-primary">No Fraccionado</span></p>
+                        {% endif %}
+                      </td>
                       <td>{{tambor.operario}}</td>                
                 </tr>
               {% endfor %}

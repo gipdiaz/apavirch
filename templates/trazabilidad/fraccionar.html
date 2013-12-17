@@ -29,9 +29,13 @@ $(function(){
               return false;
             };
             var posting = $.post( "/tambores/fraccionar/{{ tambor.idTambor }}/", $("#form-fraccionar").serialize() );
-
+            var btn = this;
             posting.done(function( data ) {
-              alert(data);
+              //if (data=="Se fracciono el tambor") {
+                alert(data);
+                open("/tambores/","_self");
+              //};
+              //alert(data);
             }); 
         });
   }); 

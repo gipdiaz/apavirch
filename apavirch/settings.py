@@ -127,7 +127,7 @@ INSTALLED_APPS = (
     'south',
     'eztables',
     'wkhtmltopdf',
-    #'bootstrapform',
+    'bootstrapform',
 )
 
 

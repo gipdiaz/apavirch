@@ -65,10 +65,24 @@
                 {% block nav %}
                 <div class="nav-collapse collapse">
                     <ul class="nav">
-                        <li><a href="/socios/">Socios</a></li>
-                        <li><a href="/lotes/">Lotes</a></li>
-                        <li><a href="/tambores/">Tambores</a></li>
-                        <li><a href="/tambores/">Remitos</a></li>
+                        {% if perms.trazabilidad.socio%}
+                            <li><a href="/socios/" accesskey="s">Socios</a></li>
+                        {% endif %}
+                        {% if perms.trazabilidad.lote%}
+                            <li><a href="/lotes/" accesskey="l">Lotes</a></li>
+                        {% endif %}
+                        {% if perms.trazabilidad.tambor%}
+                            <li><a href="/tambores/" accesskey="t">Tambores</a></li>
+                        {% endif %}
+                        {% if perms.trazabilidad.remito%}
+                            <li><a href="/remitos/" accesskey="r">Remitos</a></li>
+                        {% endif %}
+                        {% if perms.trazabilidad.apiario%}
+                            <li><a href="/admin/trazabilidad/apiario/" accesskey="a">Apiarios</a></li>
+                        {% endif %}
+                        {% if perms.trazabilidad.inspeccion%}
+                            <li><a href="/admin/trazabilidad/inspeccion/" accesskey="i">Inspecciones</a></li>
+                        {% endif %}
                         <!--<li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Reportes<b class="caret"></b></a>
                             <ul class="dropdown-menu">
@@ -86,22 +100,23 @@
                                 <li><a href="#"><strong>2</strong></a></li>
                             </ul>
                         </li>-->
+                        {% if user.is_superuser %}
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Otros<b class="caret"></b></a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Otros <b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li class="divider"></li>
                                 <li class="dropdown-header">ABM </li>
-                                <li><a href="/admin/trazabilidad/apiario/"><strong>Apiarios</strong></a></li>
                                 <li><a href="/admin/trazabilidad/ciudad/"><strong>Ciudades</strong></a></li>
-                                <li><a href="/admin/trazabilidad/inspeccion/"><strong>Inspecciones</strong></a></li>
                                 <li><a href="/admin/trazabilidad/marca/"><strong>Marcas</strong></a></li>
                                 <li class="divider"></li>
                                 <li class="dropdown-header">ABM de tipos</li>
                                 <li><a href="/admin/trazabilidad/tipoalza/"><strong>Tipo de Alza</strong></a></li>
                                 <li><a href="/admin/trazabilidad/tipodocumento/"><strong>Tipo de Documento</strong></a></li>
                                 <li><a href="/admin/trazabilidad/tipomarca/"><strong>Tipo de Marca</strong></a></li>
+                                <li><a href="/admin/trazabilidad/tipoenvase/"><strong>Tipo de Envase</strong></a></li>
                             </ul>
                         </li>
+                        {% endif %}
                     </ul>
                     <ul class="nav pull-right">
                         {% if user.is_active and user.is_staff %}
@@ -115,7 +130,9 @@
                                 </ul>
                             </li>
                         {% endif %}
+                        {% if user.is_active and user.is_superuser %}
                         <li><a href="/">Salir Admin</a></li>
+                        {% endif %}
                     </ul>
                 </div><!-- /.nav-collapse -->
                 {% endblock %}

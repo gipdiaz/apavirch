@@ -3,6 +3,7 @@ from django.shortcuts import render_to_response
 from django.views.generic import DetailView, ListView, CreateView, UpdateView
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.utils.decorators import method_decorator
 from django.contrib.auth.forms import UserCreationForm
 from django import forms 
 from django.forms.models import inlineformset_factory
@@ -35,6 +36,11 @@ class CrearLoteView(CreateView):
     template_name = 'trazabilidad/ingresar-lote.html'
     model = Lote
     form_class = FormLote
+    success_url = '/lotes/'
+
+    @method_decorator(group_required('Encargados de Sala','Encargados de Entrada y Salida'))
+    def dispatch(self, *args, **kwargs):
+        return super(CrearLoteView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         self.object = None
@@ -50,7 +56,6 @@ class CrearLoteView(CreateView):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         grupoAlza_form = GrupoAlzaFormSet(self.request.POST)
-        #grupoAlza_form.clean()
         if (form.is_valid() and grupoAlza_form.is_valid()):
             return self.form_valid(form, grupoAlza_form, request.user)
         else:
@@ -85,6 +90,10 @@ class EditarLoteView(UpdateView):
     form_class = FormLote
     success_url = '/lotes/'
 
+    @method_decorator(group_required('Encargados de Sala','Encargados de Entrada y Salida'))
+    def dispatch(self, *args, **kwargs):
+        return super(EditarLoteView, self).dispatch(*args, **kwargs)
+
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         form_class = self.get_form_class()
@@ -110,7 +119,26 @@ class EditarLoteView(UpdateView):
             return self.form_invalid(form, grupoAlza_form)
 
     def form_valid(self, form, grupoAlza_form, user):   
-        self.object = form.save()
+        #self.object = form.save()
+        #grupoAlza_form.instance = self.object
+        #grupoAlza_form.save()
+        #return HttpResponseRedirect('/lotes/')
+        peso = 0
+        for f in grupoAlza_form:
+            try:
+                if f.cleaned_data['peso']:
+                    peso = peso + f.cleaned_data['peso']
+            except KeyError:
+                pass
+        lote = self.get_object()
+        #lote = Lote.objects.get(idLote=form.cleaned_data['idLote'])
+        lote.apiario = form.cleaned_data['apiario']
+        lote.peso = peso
+        lote.observacion = form.cleaned_data['observacion']
+        lote.save()
+        estado = Ingresado.objects.get(lote=lote)
+        estado.peso = peso
+        estado.save()
         grupoAlza_form.instance = self.object
         grupoAlza_form.save()
         return HttpResponseRedirect('/lotes/')
@@ -120,68 +148,78 @@ class EditarLoteView(UpdateView):
             self.get_context_data(form=form,
                                   grupoAlza_form=grupoAlza_form))
 
-@group_required('Encargados de Sala','Encargados de Entrada y Salida')
+@group_required('Encargados de Sala','Encargados de Entrada y Salida','Encargados de Extraccion')
 def lotes(request):
     lotes = Lote.objects.all()
     return render_to_response('trazabilidad/lotes.html',{'lotes':lotes},context_instance=RequestContext(request))
 
-@login_required
+@group_required('Encargados de Sala','Encargados de Entrada y Salida')
 def eliminarLote(request, id):
     lote = Lote.objects.get(pk=id)
     GrupoAlza.objects.filter(lote=lote).delete()
     lote.delete()
     return HttpResponseRedirect("/lotes/")
 
-@login_required
 def extraerLote(request):
-    if request.is_ajax():
-        id = request.GET.get('id')
-        peso = float(request.GET.get('peso'))
-        observacion = request.GET.get('observacion')
-        user = request.user
-        lote = Lote.objects.get(pk=id)
-        if lote.estadoActual.__class__.__name__ == "Ingresado":
-            lote.extraer(user, peso, observacion)
-            return HttpResponse("Lote Extraido")
-        return HttpResponse("El lote no se puede extraer")
+    if request.user.groups.filter(name='Encargados de Sala').exists() or request.user.groups.filter(name='Encargados de Extraccion').exists():
+        if request.is_ajax():
+            id = request.GET.get('id')
+            peso = float(request.GET.get('peso'))
+            observacion = request.GET.get('observacion')
+            user = request.user
+            lote = Lote.objects.get(pk=id)
+            if lote.estadoActual.__class__.__name__ == "Ingresado":
+                lote.extraer(user, peso, observacion)
+                return HttpResponse("")
     else:
-        return HttpResponse('No es una peticion Ajax')
+        return HttpResponse('No tiene permisos para realizar esta tarea')
 
-@login_required
 def dextraerLote(request):
-    if request.is_ajax():
-        id = request.GET.get('id')
-        peso = float(request.GET.get('peso'))
-        observacion = request.GET.get('observacion')
-        user = request.user
-        lote = Lote.objects.get(pk=id)
-        if (lote.estadoActual.__class__.__name__ == "Extraido") or (lote.estadoActual.__class__.__name__ == "Devuelto"):
-            lote.extraerDeNuevo(user, peso, observacion)
-            return HttpResponse("Lote Extraido")
-        return HttpResponse("El lote no se puede extraer")
+    if request.user.groups.filter(name='Encargados de Sala').exists() or request.user.groups.filter(name='Encargados de Extraccion').exists():
+        if request.is_ajax():
+            id = request.GET.get('id')
+            peso = float(request.GET.get('peso'))
+            observacion = request.GET.get('observacion')
+            user = request.user
+            lote = Lote.objects.get(pk=id)
+            if (lote.estadoActual.__class__.__name__ == "Extraido") or (lote.estadoActual.__class__.__name__ == "Devuelto"):
+                lote.extraerDeNuevo(user, peso, observacion)
+                return HttpResponse("Lote Extraido")
+            return HttpResponse("El lote no se puede extraer")
+        else:
+            return HttpResponse('No es una peticion Ajax')
     else:
-        return HttpResponse('No es una peticion Ajax')
+        return HttpResponse('No tiene permisos para realizar esta tarea')
 
-@login_required
+#@group_required('Encargados de Sala','Encargados de Entrada y Salida')
 def devolverLote(request):
-    if request.is_ajax():
-        print "entre al ajax"
-        id = request.GET.get('id')
-        user = request.user
-        lote = Lote.objects.get(pk=id)
-        if lote.estadoActual.__class__.__name__ == "Extraido":
-            print "antes de devolver"
-            lote.devolver(user)
-            return HttpResponse("Lote Devuelto")
-        return HttpResponse("El lote no se puede devolver")
+    if request.user.groups.filter(name='Encargados de Sala').exists() or request.user.groups.filter(name='Encargados de Entrada y Salida').exists():
+        if request.is_ajax():
+            print "entre al ajax"
+            id = request.GET.get('id')
+            user = request.user
+            lote = Lote.objects.get(pk=id)
+            if lote.estadoActual.__class__.__name__ == "Extraido":
+                print "antes de devolver"
+                lote.devolver(user)
+                return HttpResponse("Lote Devuelto")
+            return HttpResponse("El lote no se puede devolver")
+        else:
+            return HttpResponse('No es una peticion Ajax')
     else:
-        return HttpResponse('No es una peticion Ajax')
+        return HttpResponse('No tiene permisos para realizar esta tarea')
 
+#@group_required('Encargados de Sala','Encargados de Extraccion')
 def loteExtraido(request, id):
-    lote = Lote.objects.get(pk=id)
-    estado = Extraido.objects.get(lote=lote)
-    tambores = Tambor.objects.filter(loteExtraido=estado)
-    return render_to_response('trazabilidad/lote-extraido.html',{'lote':lote, 'tambores':tambores}, context_instance=RequestContext(request))
+    if request.user.groups.filter(name='Encargados de Sala').exists() or request.user.groups.filter(name='Encargados de Extraccion').exists():
+        lote = Lote.objects.get(pk=id)
+        estado = Extraido.objects.get(lote=lote)
+        tambores = Tambor.objects.filter(loteExtraido=estado)
+        return render_to_response('trazabilidad/lote-extraido.html',{'lote':lote, 'tambores':tambores}, context_instance=RequestContext(request))
+    else:
+        #return HttpResponseRedirect("/lotes/")
+        msj = 'No tiene permisos para realizar esta tarea'
+        return render_to_response('trazabilidad/lote-extraido.html',{'msj':msj}, context_instance=RequestContext(request))
 
 
 #-------------------------------------------------------#
@@ -189,10 +227,13 @@ def loteExtraido(request, id):
 
 
 class CrearSocioView(CreateView):
-    #--  clase para dar altas de socios  --#
     template_name = 'trazabilidad/ingresar-socio.html'
     model = Socio
     form_class = FormSocio
+
+    @method_decorator(group_required('Encargados de Sala'))
+    def dispatch(self, *args, **kwargs):
+        return super(CrearSocioView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         self.object = None
@@ -229,10 +270,13 @@ class CrearSocioView(CreateView):
 
 
 class EditarSocioView(CreateView):
-    #-- clase para editar el socio  --#
     template_name = 'trazabilidad/editar-socio.html'
     model = Socio
     form_class = FormSocio
+
+    @method_decorator(group_required('Encargados de Sala'))
+    def dispatch(self, *args, **kwargs):
+        return super(EditarSocioView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()        
@@ -270,7 +314,7 @@ class EditarSocioView(CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
  
-@login_required
+@group_required('Encargados de Sala')
 def probarSocio(request):
     #-- funcion para cambiar el estado del socio a 'A PRUEBA'  --#
     if request.is_ajax():
@@ -287,7 +331,7 @@ def probarSocio(request):
         return HttpResponse('No es una peticion Ajax')
 
 
-@login_required
+@group_required('Encargados de Sala')
 def activarSocio(request):
     #--  funcion para cambiar el estado del socio a 'ACTIVO'  --#
     if request.is_ajax():
@@ -304,7 +348,7 @@ def activarSocio(request):
     else:
         return HttpResponse('No es una peticion Ajax')
 
-@login_required
+@group_required('Encargados de Sala')
 def desactivarSocio(request):
     #-- funcion para cambiar el estado del socio a 'INACTIVO' --#
     if request.is_ajax():
@@ -330,7 +374,7 @@ def socios(request):
 #-------------------------------------------------------#
 #------------------   TAMBORES   -----------------------#
 
-@group_required('Encargados de Sala')
+@group_required('Encargados de Sala','Encargados de Fraccionamiento')
 def tambores(request, msj = None):
     print msj
     """ Gestion de tambores """
@@ -353,7 +397,7 @@ def tambores(request, msj = None):
             return render_to_response('trazabilidad/tambores.html',{'msj':msj,'buscar':buscar,'tambores':tambores},context_instance=RequestContext(request))
         return render_to_response('trazabilidad/tambores.html',{'buscar':buscar,'tambores':tambores},context_instance=RequestContext(request))
 
-@login_required
+@group_required('Encargados de Sala','Encargados de Fraccionamiento')
 def fraccionar(request, id):
     print "fracionando"
     #-- funcion para asignar marcas a socios --#
@@ -374,18 +418,19 @@ def fraccionar(request, id):
                     frac.save()
                     tambor.fraccionado = True
                     tambor.save()
-                    print "return 1"
-                    return HttpResponse ("Funciono")
+                    #print "return 1"
+                    return HttpResponse ("Se fracciono el tambor")
                     #return HttpResponseRedirect('/tambores/')
                 else:
-                    #msj = 'La ultima inspeccion no aprueba el fraccionamiento de la marca %s en el apiario %s' % (marca,tambor.loteExtraido.lote.apiario)
+                    msj = 'La ultima inspeccion no aprueba el fraccionamiento de la marca %s en el apiario %s' % (marca,tambor.loteExtraido.lote.apiario)
                     #tambores = Tambor.objects.all()
                     #return render_to_response('trazabilidad/tambores.html',{'msj':msj,'tambores':tambores},context_instance=RequestContext(request))
-                    print "return 2"
-                    return HttpResponse ("No Funciono")
+                    #print "return 2"
+                    return HttpResponse (msj)
             else:
-                return HttpResponse ("Funciono 2")
-                print "return 3"
+                msj = "El socio no posee la marca %s" % (marca)
+                return HttpResponse (msj)
+                #print "return 3"
                 #msj = 'El socio %s no posee la marca %s' % (socio, marca)
                 #tambores = Tambor.objects.all()
                 #return render_to_response('trazabilidad/tambores.html',{'msj':msj,'tambores':tambores},context_instance=RequestContext(request))
@@ -395,6 +440,7 @@ def fraccionar(request, id):
         print"este es el form", form
         return render_to_response('trazabilidad/fraccionar.html', {'form':form, 'socio':socio, 'tambor':tambor}, context_instance=RequestContext(request))
 
+@group_required('Encargados de Sala','Encargados de Fraccionamiento')
 def tamborFraccionado(request, id):
     tambor = Tambor.objects.get(pk=id)
     if tambor.fraccionado:
@@ -474,10 +520,12 @@ def marcasSocio(request, id):
             {'form':form, 'socio':socio},
             context_instance=RequestContext(request))
 
+
 #-------------------------------------------------------#
 #------------------   REMITOS   ------------------------#
 
-@group_required('Encargados de Sala')
+
+@group_required('Encargados de Sala','Encargados de Entrada y Salida')
 def remitos(request):
     #--  funcion que retorna todos los remitos  --#
     """ Gestion de remitos """

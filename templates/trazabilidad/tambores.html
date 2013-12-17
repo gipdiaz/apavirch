@@ -61,6 +61,7 @@
                     <th>Tambor</th>
                     <th>Lote Extraido</th>
                     <th>Peso</th>
+                    <th>Fecha de Extracción</th>
                     <th>Operario</th>
                     <th class="text-center">Estado Actual</th>
                     <th class="text-center">Acciones</th>
@@ -72,6 +73,7 @@
                 <td name="idTambor">{{tambor.idTambor}}</td>
                 <td>Lote {{ tambor.loteExtraido.lote.pk }}</td>
                 <td>{{ tambor.peso }}</td>
+                <td>{{tambor.loteExtraido.fecha}}</td>
                 <td>{{ tambor.operario }}</td>
                 <td class="center">
                     {% if tambor.fraccionado %}
