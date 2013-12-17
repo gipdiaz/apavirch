@@ -1,8 +1,9 @@
 {% extends 'trazabilidad/base.html' %}
 {% block head %}
-    <title>Ingreso de Lote</title>
+    <title>Ingreso de Remito</title>
     <script src="{{ STATIC_URL }}js/jquery-2.0.3.min.js"></script>
     <script type="text/javascript" src="/static/js/gst-remitos.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/lotes.css">
     <style>
         .hideTd{
             visibility: hidden
@@ -15,57 +16,64 @@
     <div class ="row">
         <div class="row center">
             <div class="col-sm-12">
-                <h1> Ingreso de Lote </h1>
+                <h1> Ingreso de Remito </h1>
             </div>
         </div>
-        <form class="form-horizontal" action="." method="post">
+        <form id="formRemito" class="form-horizontal" action="." method="post">
             <div class="col-md-10">
-                <legend>Lote</legend>
+                <legend>Remito</legend>
                 {% csrf_token %}
                 {% for f in form %}
-                {% if f.label != "Peso" %}
-                    {% if f.errors %}
-                        <div class="form-group alert alert-danger">
-                            <label class="col-md-2 control-label" for="input{{f.label}}">{{f.label}}</label>
-                            <div class="col-md-10">
-                                {{f}}
-                                <span class="help-inline">
-                                    {% for error in  f.errors %}{{ error }}{% endfor %}
-                                </span>
-                            </div>
+                {% if f.errors %}
+                    <div class="form-group alert alert-danger">
+                        <label class="col-md-2 control-label" for="input{{f.label}}">{{f.label}}</label>
+                        <div class="col-md-10">
+                            {{f}}
+                            <span class="help-inline">
+                                {% for error in  f.errors %}{{ error }}{% endfor %}
+                            </span>
                         </div>
-                    {% else %}
-                        <div class="form-group">
-                            <label class="col-md-2 control-label" for="input{{f.label}}">{{f.label}}</label>
-                            <div class="col-md-10">
-                                {{f}}
-                            </div>
+                    </div>
+                {% else %}
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="input{{f.label}}">{{f.label}}</label>
+                        <div class="col-md-10">
+                            {{f}}
                         </div>
-                    {% endif %}
+                    </div>
                 {% endif %}
                 {% endfor %}
                 {{ form.management_form }}
                 {{ form.non_form_errors }}
             </div>
             <div class="col-md-10 top-margin">
-                <legend>Grupos de Alzas</legend>
+                <legend>Detalles</legend>
                 <table id="grupo-alza" class="table table-condensed table-striped table-hover">
                    <thead>
                         <tr>
-                            <th>Tambor</th>
-                            <th>Fraccionamiento</th>
+                            <th>Tipo</th>
+                            <th>Tambor  Fraccionamiento</th>
                             <th></th>
                         </tr>
                     </thead>
                    <tbody>
+                      <tr class="item">
                       {% for formset in remitoDetalle_form.forms %}
-                      <tr class="item">                          
-                          <td class="tambor">{{ formset.tambor.errors }}{{ formset.tambor }}</td>
-                          <td class="fraccionamiento">{{ formset.fraccionamiento.errors }}{{ formset.fraccionamiento }}</td>
+                          <td class="tipoDetalle">{{ formset.tipoDetalle.errors }}{{ formset.tipoDetalle }}</td>
+                          <td class="objetoDetalle">
+									<div class="form-group tambor col-md-12">
+                                    {{ formset.tambor.errors }}{{ formset.tambor }}
+                                       <span class="help-inline" style="display:none">Este campo es obligatorio.</span>
+									</div>
+									<div class="form-group fraccionamiento col-md-12">
+                                    {{ formset.fraccionamiento.errors }}{{ formset.fraccionamiento }}
+                                        <span class="help-inline" style="display:none">Este campo es obligatorio.</span>
+									</div>
+                          </td>
                           <td><button id="delete" type="button" class="btn btn-danger btn-xs">Eliminar</button></td>
                       </tr>
                       {% endfor %}
-                   </tbody>
+                   </tbody>     
                 </table>
                 {{ remitoDetalle_form.management_form }}
                 {% if remitoDetalle_form.non_form_errors %}
@@ -75,7 +83,7 @@
                 {% endif %}    
                 <button id="add" type="button" class="btn btn-success btn-xs">Agregar otro Detalle</button>
                 <hr>        
-                <input type="submit" value="Guardar" class="submit btn btn-primary" />
+                <input id ="guardar" value="Guardar" class="submit btn btn-primary" />
             </div>
         </form>
     </div>

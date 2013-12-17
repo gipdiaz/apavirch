@@ -439,7 +439,8 @@ class RemitoDetalle (models.Model):
     tambor = models.ForeignKey (Tambor, null=True, blank=True)
     fraccionamiento = models.ForeignKey (Fraccionamiento, null=True, blank = True)
     
-    class Meta:        
+    class Meta:
+        unique_together = ("remito", "tambor", "fraccionamiento")    
         verbose_name_plural = "Detalles de Remitos"
     
     def __unicode__(self):
