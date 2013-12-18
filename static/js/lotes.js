@@ -52,6 +52,8 @@ $(function () {
     $(document).ready(function(){
 
         $('.btn-accion').tooltip();
+
+        //$(document).bind('keydown', 'F2', alert("funco"));
         
         $('#tabla-lotes').dataTable({
             "oLanguage": {

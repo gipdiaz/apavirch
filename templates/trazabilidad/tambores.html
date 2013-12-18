@@ -16,6 +16,7 @@
     <script type="text/javascript">
         $(function () {
             $(document).ready(function(){
+                
                 {% if buscar %}
                     var busqueda = "{{busqueda}}";
                     $('#tabla-lotes').dataTable({
@@ -46,6 +47,7 @@
 {% endblock %}
   
 {% block body %}
+<a class="hidden" href="/" accesskey="p">HTML5</a>
     <div class="row center">
         <div class="col-sm-12">
             <h1 style="margin:0px 0px 0px 0px;"> Gestión de Tambores </h1>

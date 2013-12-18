@@ -6,6 +6,8 @@ urlpatterns = patterns('apavirch.trazabilidad.views',
                        
     #-- Index --#
     url(r'^$',index),
+    (r'^grafico/simple/$', simple),
+    (r'^grafico/simple2/$', simple2),
 
     #-- Lotes --#
     url(r'^lotes/$',lotes),
@@ -45,5 +47,6 @@ urlpatterns = patterns('apavirch.trazabilidad.views',
     #-- Reportes --#
     url(r'^reportes/lote-socio/(?P<id_socio>\d+)/$', PDFLoteSocioView.as_view()),
     url(r'^reportes/tambor-lote/(?P<id_lote>\d+)/$', PDFTamborLoteView.as_view()),
+    url(r'^reportes/marcas-fraccionamientos/$', PDFMarcasFraccionamientosView.as_view()),
     
 )

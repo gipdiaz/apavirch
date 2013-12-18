@@ -18,6 +18,7 @@
 {% endblock %}
   
 {% block body %}
+    <button accesskey="h" type="button" class="hidden btn-ayuda" data-toggle="modal" data-target="#ayuda-socio" data-toggle="tooltip" data-placement="top" data-original-title=""></button>
     <div class="row center">
         <div class="col-sm-12">
             <h1 style="margin:0px 0px 0px 0px;"> Gestión de Socios </h1>
@@ -110,4 +111,6 @@
 
     <!-- Modal -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"></div>
+    <!-- Modal -->
+    <div class="modal fade" id="ayuda-socio" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"></div>
 {% endblock %}

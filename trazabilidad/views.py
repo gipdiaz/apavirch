@@ -14,6 +14,16 @@ from .forms import FormLote, GrupoAlzaFormSet, FormSocioEditar, FormSocio, FormM
 
 from django.forms import Form
 
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from matplotlib.dates import DateFormatter
+import matplotlib
+import datetime 
+import random
+from django.utils import timezone
+from apavirch import settings
+
 #-------------------------------------------------------#
 #--------------------   EXTRAS   -----------------------#
 
@@ -28,6 +38,32 @@ def group_required(*group_names):
 @login_required
 def index(request):
     return render_to_response('trazabilidad/index.html',context_instance=RequestContext(request))
+
+def simple():
+    cant = []
+    marcas = []
+    marcas_obj = Marca.objects.all().order_by("idMarca")
+    for m in marcas:
+        cant.append(Fraccionamiento.objects.filter(marca=marca).count())
+        marcas.append(m.pk)
+
+    fig=Figure()
+    ax=fig.add_subplot(111)
+    x=[]
+    y=[]
+    now=datetime.datetime.now()
+    delta=datetime.timedelta(days=1)
+    for i in range(10):
+        x.append(now)
+        now+=delta
+        y.append(random.randint(0, 1000))
+    ax.plot_date(x, y, '-')
+    ax.xaxis.set_major_formatter(DateFormatter('%Y-%m-%d'))
+    fig.autofmt_xdate()
+    canvas=FigureCanvas(fig)
+    response=HttpResponse(content_type='image/png')
+    canvas.print_png(response)
+    return response
 
 #-------------------------------------------------------#
 #-------------------   LOTES   -------------------------#
@@ -756,3 +792,101 @@ class PDFTamborLoteView(PDFTemplateView):
         if (tambores == []):
             tambores = None
         return {'lote':lote, 'socio': socio, 'tambores': tambores}
+
+class PDFMarcasFraccionamientosView(PDFTemplateView):
+    template_name = 'trazabilidad/pdfs/marcas-fraccionamientos.html'
+    #header_template = 'trazabilidad/pdfs/cabecera.html'
+    footer_template = 'trazabilidad/pdfs/pie.html'
+    filename = 'marcas-fraccionamientos.pdf'
+    #context_object_name = "persona"
+    show_content_in_browser = True
+    cmd_options = {
+        'footer-line': True,
+    }
+
+    def __init__(self):
+        pass
+  
+    def get_context_data(self, **kwargs):
+
+        cant = []
+        marcas = []
+        marcas_obj = Marca.objects.all().order_by("idMarca")
+        for m in marcas_obj:
+            cant.append(Fraccionamiento.objects.filter(marca=m).count())
+            marcas.append(m.descripcion)
+
+        fig = Figure()
+        fig = Figure(facecolor='white', edgecolor='white')
+        ax = fig.add_subplot(1,1,1)
+
+        x = matplotlib.numpy.arange(0, len(marcas))
+
+        ind = matplotlib.numpy.arange(len(cant))
+
+        width = 0.4
+        colors = ["red","blue","green","orange","yellow"]
+        ax.bar(ind, cant, width, color=colors)
+
+        ax.set_xticks(ind + width / 2.0)
+        ax.set_xticklabels(marcas)
+        ax.set_xlabel("Marcas Registradas")
+        ax.set_ylabel("Cantidad de Fraccionamientos")
+        ax.set_title("Cantidad de Fraccionamientos por Marcas")
+
+        padding = 0.2
+        ax.set_xlim([x.min() - padding, x.max() + width + padding])
+
+        canvas =  FigureCanvas(fig)
+        response = HttpResponse(content_type='image/png')
+        canvas.print_png(response)
+        filename = "marcas-fraccionamientos.png"
+        path = settings.MEDIA_ROOT+filename
+        fig.savefig(path)
+        fecha = timezone.now()
+
+        i = 0
+        for marca in marcas_obj:
+            marca.cant = cant[i]
+            i = i + 1
+
+        return {'marcas':marcas_obj,'cant':cant,'fecha':fecha,'filename':filename}
+
+
+def simple2():
+    cant = []
+    marcas = []
+    marcas_obj = Marca.objects.all().order_by("idMarca")
+    for m in marcas_obj:
+        cant.append(Fraccionamiento.objects.filter(marca=m).count())
+        marcas.append(m.descripcion)
+
+    fig = Figure()
+    fig = Figure(facecolor='white', edgecolor='white')
+    ax = fig.add_subplot(1,1,1)
+
+    x = matplotlib.numpy.arange(0, len(marcas))
+
+    ind = matplotlib.numpy.arange(len(cant))
+
+    #height = 0.8
+    width = 0.5
+    colors = ["red","blue","green","orange","yellow"]
+    ax.bar(ind, cant, width, color=colors)
+
+    ax.set_xticks(ind + width / 2.0)
+    ax.set_xticklabels(marcas)
+    ax.set_xlabel("Marcas Registradas")
+    ax.set_ylabel("Cantidad de Fraccionamientos")
+    ax.set_title("Cantidad de Fraccionamientos por Marcas")
+
+    padding = 0.2
+    ax.set_xlim([x.min() - padding, x.max() + width + padding])
+
+    canvas =  FigureCanvas(fig)
+    response = HttpResponse(content_type='image/png')
+    canvas.print_png(response)
+    filename = "marcas-fraccionamientos.png"
+    fig.savefig(filename)
+    #return HttpResponse("funciono")
+    return

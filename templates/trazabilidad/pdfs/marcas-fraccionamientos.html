@@ -1,0 +1,57 @@
+{% load url from future %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+    <head>
+        <title>Reporte Gerencial</title>
+        <link type="text/css" rel="stylesheet" href="/home/gaston/workspace-django/apavirch/static/css/bootstrap.min.css">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    </head>
+    <body onload="subst()">
+      <div class="container">
+        <div class="row">
+          <div style="margin:5px;" class="page-header">
+            <table>
+              <tbody>
+                <tr>
+                  <td><img src="/home/gaston/workspace-django/apavirch/static/img/icon-apavirch.png" height="70px"> </td>
+                  <td>
+                    <h1 style="margin:0px;">Apavirch</h1>
+                    <h1 style="margin:0px;"><small style="margin:0px;">Asociación de Apicultores del Valle Inferior del Río Chubut</small></h1>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>  
+        </div>
+        <div class="row">
+          <h2 class="text-center">Reporte Gerencial<h2>
+          <h3 class="text-center">Cantidad de fraccionamientos realizados por las marcas</h3>
+          <hr>
+          <h4>Detalles del reporte</h4>
+          <b>Fecha de realización</b>: <i>{{ fecha }}</i><br>
+        </div>
+        <br>
+        <div class="row">
+          <table  id="tabla-tambores" class="table table-bordered table-condensed table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Marca</th>
+                    <th>Cantidad de Fraccionamientos</th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for marca in marcas %}
+                <tr>
+                      <td name="id">{{ marca }}</td>
+                      <td>{{ marca.cant }}</td>
+                </tr>
+              {% endfor %}
+            </tbody> 
+        </table>
+        </div>
+        <div class="row">
+          <img src="/media/marcas-fraccionamientos.png">
+        </div>
+      </div>
+    </body>
+</html>

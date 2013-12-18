@@ -10,10 +10,22 @@ function eliminarSocio (id) {
 function reporte (id) {
     open("/reportes/lote-socio/" + id,"_self");
 }
+function reporte (id) {
+    open("/reportes/lote-socio/" + id,"_self");
+}
+
+var divayuda =  '<div class="row">'            
+                    +'<img src="/media/marcas-fraccionamientos.png" width="300" height="300">'   
+                +'</div>';
  
 
 $(function () { 
     $(document).ready(function(){
+
+        $(".btn-ayuda").click( function() {
+            bootbox.alert(divayuda, function(result) {
+                });
+        });
         
         $('.btn-accion').tooltip();
 
