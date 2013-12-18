@@ -16,6 +16,14 @@ $(function () {
             "oLanguage": {
                 "sUrl": "/static/js/libs/datatables/language.es.json"
             },
+            "aaSorting": [[ 0, "desc" ]],
         });   
+
+        $('.btn-accion').tooltip();
+
+        $(".btn-accion").click( function() {
+            var idRemito = $(this).closest('tr').find('td:eq(0)').text();
+            $("#modal-remito").load("/remitos/ver-remito/"+idRemito);
+        });
     });
 });

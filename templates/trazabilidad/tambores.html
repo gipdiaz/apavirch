@@ -23,12 +23,14 @@
                             "sUrl": "/static/js/libs/datatables/language.es.json",
                         },
                         "oSearch": {"sSearch": busqueda},
+                        "aaSorting": [[ 0, "desc" ]],
                     });
                 {% else %}
                     $('#tabla-lotes').dataTable({
                         "oLanguage": {
                             "sUrl": "/static/js/libs/datatables/language.es.json",
                         },
+                        "aaSorting": [[ 0, "desc" ]],
                     });
                 {% endif %}
                 {% if msj %}

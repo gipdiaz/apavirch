@@ -416,7 +416,7 @@ class Fraccionamiento (models.Model):
         verbose_name_plural = "Fraccionamientos"
     
     def __unicode__(self):
-        return u'%s %s %s %s' % (self.idFraccionamiento, self.tambor, self.tipoEnvase, self.marca)
+        return u'Fraccionamiento %s' % (self.idFraccionamiento)
 
 ## ------------------------------------------- ##
 class Remito (models.Model):
@@ -436,11 +436,10 @@ class Remito (models.Model):
 class RemitoDetalle (models.Model):
     idRemitoDetalle = models.AutoField (primary_key = True)
     remito = models.ForeignKey (Remito, null = False)
-    tambor = models.ForeignKey (Tambor, null=True, blank=True)
-    fraccionamiento = models.ForeignKey (Fraccionamiento, null=True, blank = True)
+    tambor = models.OneToOneField(Tambor, null=True, blank=True)
+    fraccionamiento = models.OneToOneField(Fraccionamiento, null=True, blank=True)
     
     class Meta:
-        unique_together = ("remito", "tambor", "fraccionamiento")    
         verbose_name_plural = "Detalles de Remitos"
     
     def __unicode__(self):

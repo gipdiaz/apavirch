@@ -42,12 +42,34 @@
                             </div>
                         </div>
                     {% else %}
-                        <div class="form-group">
+                    {% if  f.label == "Número de Documento" or f.label == "Tipo de Documento" or f.label == "CUIL / CUIT" %}
+                        {% if  f.label == "Tipo de Documento" %}
+                            <div class="form-group">
+                                <label class="col-md-2 control-label" for="input{{f.label}}">{{f.label}}</label>
+                                <div class="col-md-10">
+                                    {{f.as_hidden}}
+                                    {% if f.value == 1 %}
+                                        DNI
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="form-group">
+                                <label class="col-md-2 control-label" for="input{{f.label}}">{{f.label}}</label>
+                                <div class="col-md-10">
+                                    {{f.as_hidden}}{{f.value}}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                       <div class="form-group">
                             <label class="col-md-2 control-label" for="input{{f.label}}">{{f.label}}</label>
                             <div class="col-md-10">
                                 {{f}}
                             </div>
-                        </div>
+                        </div> 
+                    {% endif %}
+                        
                     {% endif %}
                 {% endfor %}
                 {{ form.management_form }}

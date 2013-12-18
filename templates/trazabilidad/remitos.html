@@ -35,7 +35,7 @@
         <table  id="tabla-remitos" class="table table-bordered table-condensed table-striped table-hover">
            <thead>
                 <tr>
-                    <th>id Remito</th>
+                    <th>Remito</th>
                     <th>socio</th>
                     <th>fecha</th>
                     <th>Observacion</th>                    
@@ -46,14 +46,14 @@
             {% for remito in remitos %}
 			 <tr>
                   <td name="idRemito">{{ remito.idRemito }}</td>
-                  <td>{{ remito.remitoDetallesocio.nombreYApellido }}</td>
+                  <td>{{ remito.socio.nombreYApellido }}</td>
 	              <td>{{ remito.fecha }}</td>
 	              <td>{{ remito.observacion }}</td>
                   <td class="center">                
-                        <button id="btn_editar_{{ remito.idRemito }}" type="button" class="btn btn-info btn-xs" 
-                            onclick="editarRemito({{ remito.idRemito }})">Editar</button>
-                        <button id="btn_editar_{{ remito.idRemito }}" type="button" class="btn btn-danger btn-xs"
-                            onclick="eliminarRemito({{ remito.idRemito }})">Eliminar</button>              
+                        <button id="btn-lote-{{lote.idLote}}" type="button" class="btn btn-xs btn-lima btn-accion" data-toggle="modal" data-target="#modal-remito" data-toggle="tooltip" data-placement="top" data-original-title="Ver el lote extraido">Ver remito</button> 
+                        <button type="button" class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" data-original-title="Eliminar el remito" onclick="eliminarRemito({{ remito.idRemito }})">
+                        <span class="glyphicon glyphicon-remove"></span>
+                        </button>                
                   </td>                
               </tr>
             {% endfor %}
@@ -61,5 +61,5 @@
         </table>
 
     <!-- Modal -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"></div>
+    <div class="modal fade" id="modal-remito" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"></div>
 {% endblock %}

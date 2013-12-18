@@ -258,6 +258,7 @@ class CrearSocioView(CreateView):
             tipoDocumento = form.cleaned_data['tipoDocumento'], nroDocumento = form.cleaned_data['nroDocumento'],
             nombreYApellido = form.cleaned_data['nombreYApellido'], direccion = form.cleaned_data['direccion'],
             telefono = form.cleaned_data['telefono'], email = form.cleaned_data['email'],
+            ciudad = form.cleaned_data['ciudad'],
             content_type = ContentType.objects.get_for_model(estado), 
             object_id = estado.pk) 
         socio.save()
@@ -364,6 +365,12 @@ def desactivarSocio(request):
         return HttpResponse('No es una peticion Ajax')
 
 @group_required('Encargados de Sala')
+def eliminarSocio(request, id):
+    socio = Socio.objects.get(pk=id)
+    socio.delete()
+    return HttpResponseRedirect("/socios/")
+
+@group_required('Encargados de Sala')
 def socios(request):
     #--  funcion que retorna todos los socios  --#
     """ Gestion de socios """
@@ -456,10 +463,15 @@ def tamborFraccionado(request, id):
 def marcasSocio(request, id):
     #-- funcion para asignar marcas a socios --#
     socio = Socio.objects.get(pk=id)
-    if request.POST:        
+    print "entre a la vista"
+    if request.POST:
+        print "entre al POST"        
         formset = MarcaFormSet(request.POST)
-        for form in formset:             
+        for form in formset:
+            print form.is_valid()
+            print form             
             if form.is_valid():
+                print "El form es valido", form
                 if form.cleaned_data['checkSocioMarca']:
                     idMarca = form.cleaned_data['idMarca']
                     marca = Marca.objects.get(pk=idMarca)     
@@ -479,24 +491,9 @@ def marcasSocio(request, id):
                         print 'borrl'   
         return HttpResponseRedirect('/socios/')
     else:
-        # condicion = 'SELECT CASE WHEN idMarca=marca_id THEN "True" ELSE "False" END FROM trazabilidad_sociomarca where idMarca=marca_id and socio_id = '+str(socio.codigoUnicoIdentif)
-        # marcasSocio = Marca.objects.extra(select={'checkSocioMarca': condicion})
-        # initial_data = []        
-        # #import pdb; pdb.set_trace()
-        # for marca in marcasSocio:            
-        #     aux = {}
-        #     for f in marca._meta.fields:
-        #         if f.name in ['tipoMarca']:
-        #             aux['tipoMarca'] = getattr(marca, f.name).descripcion
-        #         else:
-        #             aux[f.name] = getattr(marca, f.name)
-        #     aux['checkSocioMarca'] = marca.checkSocioMarca
-        #     initial_data.append(aux)
-
-        # form = MarcaFormSet(initial=initial_data)
-
-        sm = socio.marcas.all()
-        marcas = Marca.objects.all()
+        sm = socio.marcas.all().order_by('idMarca')
+        print "Marcas del Socio == ", sm
+        marcas = Marca.objects.all().order_by('idMarca')
         initial_data = []
         i = sm.count()
         j = 0
@@ -507,8 +504,9 @@ def marcasSocio(request, id):
             aux['tipoMarca'] = marca.tipoMarca
             aux['checkSocioMarca'] = False
             if i > j:
-                print sm[j]
+                print "Primer if", sm[j]
                 if sm[j] == marca:
+                    print "Segundo if", sm[j]
                     aux['checkSocioMarca'] = True
                     j = j + 1
             initial_data.append(aux)
@@ -531,6 +529,17 @@ def remitos(request):
     """ Gestion de remitos """
     remitos = Remito.objects.all()
     return render_to_response('trazabilidad/remitos.html',{'remitos':remitos},context_instance=RequestContext(request))
+
+def verRemito(request, id):
+    if request.user.groups.filter(name='Encargados de Sala').exists() or request.user.groups.filter(name='Encargados de Entrada y Salida').exists():
+        remito = Remito.objects.get(pk=id)
+        remito_detalle = RemitoDetalle.objects.filter(remito=remito)
+        print "==========000000000==========="
+        return render_to_response('trazabilidad/ver-remito.html',{'remito':remito, 'remito_detalle':remito_detalle}, context_instance=RequestContext(request))
+    else:
+        #return HttpResponseRedirect("/lotes/")
+        msj = 'No tiene permisos para realizar esta tarea'
+        return render_to_response('trazabilidad/ver-remito.html',{'msj':msj}, context_instance=RequestContext(request))
 
 '''
 @login_required
@@ -586,6 +595,7 @@ class CrearRemitoView(CreateView):
             remito = Remito(operario=user, socio = form.cleaned_data['socio'], observacion=form.cleaned_data['observacion'])
             remito.save()
             for f in remitoDetalle_form:
+                print "remito detalle", f
                 if f.is_valid():
                     try:
                         if f.cleaned_data['fraccionamiento'] != None:
@@ -595,6 +605,7 @@ class CrearRemitoView(CreateView):
                             print 'es un tambor ', type(f.cleaned_data['tambor'])
                             remitoDetalle = RemitoDetalle(remito = remito, tambor = f.cleaned_data['tambor']) 
                         remitoDetalle.save()
+                        
                         #else:
                         #    remitoDetalle = RemitoDetalle(remito = remito, tambor = f.cleaned_data['tambor'], fraccionamiento = None)
                         #remitoDetalle.save()

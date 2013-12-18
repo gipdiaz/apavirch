@@ -1,0 +1,45 @@
+{% extends "trazabilidad/modal.html" %}
+{% block modaltitle %}
+<h3>Detalle del remito</h3>
+<b>Número de remito</b>: <i>{{ remito.idRemito }}</i><br>
+<b>Socio</b>: <i>{{remito.socio}}</i><br>
+<b>Fecha</b>: <i>{{remito.fecha}}</i>
+{% endblock %}
+{% block modalbody %}
+    
+    <script type="text/javascript">
+    $(document).ready(function(){
+      var msj = "{{msj}}";
+      if (msj=="No tiene permisos para realizar esta tarea") {
+          alert(msj);
+          open("/lotes/","_self");
+      };
+    });   
+    </script>
+
+    <div class="row">
+        <table  id="tabla-tambores" class="table table-condensed table-hover">
+            <thead>
+                <tr>
+                    <th>Detalle del Remito</th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for rd in remito_detalle %}
+    			      <tr>
+                      <td>
+                        {% if rd.tambor == None %}
+                            {{rd.fraccionamiento}}
+                        {% else%}
+                            {{rd.tambor}}
+                        {% endif %}
+                      </td>
+                </tr>
+              {% endfor %}
+            </tbody> 
+        </table>
+      </div>
+{% endblock %}
+{% block modalfooter %}
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+{% endblock %}

@@ -21,6 +21,7 @@ $(function () {
             "oLanguage": {
                 "sUrl": "/static/js/libs/datatables/language.es.json"
             },
+            "aaSorting": [[ 5, "desc" ]],
         }); 
 
         //-- Manejador de los botones de estado --//

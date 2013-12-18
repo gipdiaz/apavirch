@@ -128,7 +128,7 @@ $(function () {
         $('#guardar').on('click', function(){
             formulario = $('#formRemito').first();
             valido = esValido(formulario);
-            if (valido){             
+            if (valido){
                 formulario.submit();
             };
         });

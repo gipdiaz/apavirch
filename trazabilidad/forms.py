@@ -42,13 +42,13 @@ class FormSocio(ModelForm):
     #--  form para editar/ingresar socios cuyo estado es a prueba --#
     Prueba = forms.CharField(max_length= 100)
     class Meta:
-        fields = ('codigoUnicoIdentif' ,'tipoDocumento', 'nroDocumento','nombreYApellido','direccion','telefono','email', 'nroRenapa')
+        fields = ('codigoUnicoIdentif' ,'tipoDocumento', 'nroDocumento','nombreYApellido','direccion','telefono','email', 'nroRenapa', 'ciudad')
         model = Socio
     
 class FormSocioEditar(ModelForm):
     #--  form para editar socios cuyo estado no es a prueba  --#
     class Meta:
-        fields = ('codigoUnicoIdentif' ,'tipoDocumento', 'nroDocumento','nombreYApellido','direccion','telefono','email', 'nroRenapa')
+        fields = ('codigoUnicoIdentif' ,'tipoDocumento', 'nroDocumento','nombreYApellido','direccion','telefono','email', 'nroRenapa', 'ciudad')
         model = Socio
 
 
@@ -58,7 +58,7 @@ class FormMarcaSocio(Form):
     idMarca = forms.IntegerField(required= False)
     descripcion = forms.CharField (max_length =20, required= False)
     tipoMarca = forms.CharField (max_length =20, required= False)
-    pepe = forms.CharField (max_length =20, required= True)
+    #pepe = forms.CharField (max_length =20, required= True)
 
 MarcaFormSet = formset_factory(FormMarcaSocio, extra = 0)
 
@@ -114,8 +114,8 @@ class RemitoDetalleForm(Form):
     )
 
     tipoDetalle = forms.ChoiceField(choices = CHOICES, required=True)
-    tambor = forms.ModelChoiceField(queryset=Tambor.objects.all(), required = False)
-    fraccionamiento = forms.ModelChoiceField(queryset=Fraccionamiento.objects.all(), required = False)
+    tambor = forms.ModelChoiceField(queryset=Tambor.objects.all().exclude(idTambor__in=RemitoDetalle.objects.all().exclude(tambor=None).values_list('tambor',flat=True)), required = False)
+    fraccionamiento = forms.ModelChoiceField(queryset=Fraccionamiento.objects.all().exclude(idFraccionamiento__in=RemitoDetalle.objects.all().exclude(fraccionamiento=None).values_list('fraccionamiento',flat=True)), required = False)
 
 class RemitoDetalleRequiredFormSet(forms.models.BaseInlineFormSet):
 
